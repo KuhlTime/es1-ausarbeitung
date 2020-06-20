@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+	</head>
+<body>
+<figure><img src="Artboard.png"/></figure>
+
+<h1>Navitron: Ein Portabler Navigationskompass</h1>
+
+<h3>Ausarbeitung für Embedded Systems 1</h3>
+
+<figure><img src="Profile.png"/></figure>
+
+<ul>
+	<li>Name: <strong>André Kuhlmann</strong></li>
+	<li>Matrikelnummer: <strong>779690</strong></li>
+	<li>Fachbereich: <strong>Elektro- und Informationstechnik <br/>Hochschule Düsseldorf</strong></li>
+	<li>Erstellt: <strong>17. Juni 2020</strong></li>
+	<li>Letztes Update: <b><span id="lastUpdated">Lädt ...</span></b> </li>
+</ul>
+
+<h2>Inhaltsverzeichnis</h2>
+
+<div id="toc"></div>
+<hr />
+
+<h2>Einleitung</h2>
+
+<p>Begonnen hat alles mit einer Mountainbike-Tour, mit meinem Vater. Die Tour die wir fahren wollten hatten wir zuvor in einer Outdoor-App auf unser Handy heruntergeladen doch trotz des elektronischen Helfers in der Tasche mussten wir alle paar Meter nach der richtigen Abzweigung Ausschau halten. <br/>Da mir und meinem Vater das ständige rausholen des Handys irgendwann auf die Nerven ging machte ich mich im Internet nach einer Alternative schlau.<br/>Ich stieß damals auf einen Kickstarter Eintrag namens „<a href="https://www.kickstarter.com/projects/smarthalo/smarthalo-turn-your-bike-into-a-smart-bike?lang=de" title="SmartHalo"><em>SmartHalo</em></a>”.</p>
+
+<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher gehabt und konnte diese Direkt auf einem Breadboard testen. </p>
+
+<p>Ich habe das Dokument in einige Themenbereiche gegliedert, in denen ich einzeln auf einige Besonderheiten des Projektes eingehe.</p>
+
+<p>Da die Aufgabe darin bestand eine Audio- oder Videodatei aufzunehmen, nutze ich diese schriftliche Ausarbeitung als eine Art Skript für meine Videos.</p>
+
+<h3>Showcase</h3>
+
+<p></p>
+
+<hr />
+
+<h2>Umsetzung</h2>
+
+<h3>Plannung</h3>
+
+<ul>
+	<li>Der Ring soll die Richtung anzeigen in die der Nutzer fahren soll</li>
+	<li>Das Gerät sollte einen Akku eingebaut haben (LiPo)</li>
+	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung mit dem Smartphone erhalten</li>
+</ul>
+
+<figure><img src="Artboard-1.png" alt="Aufgabenverteilung und Funktionsbausteine der beiden Geräte"/><figcaption>Aufgabenverteilung und Funktionsbausteine der beiden Geräte</figcaption></figure>
+
+<h3>Das Gerät</h3>
+
+<p>Das Gerät selber habe ich „<em>Navitron</em>” getauft, einen triftigen Grund gab es nicht. Ich fand der Name klang ganz schön.</p>
+
+<p>Die Schaltung für das Gerät, welches schlussendlich am Lenker meines Fahrrads montiert werden soll habe ich in Eagle entworfen. </p>
+
+<h4>USB to Serial Converter</h4>
+
+<p>Um ein schnelles umprogrammieren des Mikrocontrollers zu ermöglichen habe ich mich für die Verwendung eines USB to Serial Converter entschieden. Damit lassen sich Programmupdates ohne großen Aufwand direkt auf den Chip des Navitron flashen. </p>
+
+<h3>Die App</h3>
+
+<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung sowie die Einpflegung und Verarbeitung der Route über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen.</p>
+
+<hr />
+
+<h2>Beschreibung</h2>
+
+<p>In diesem Teil gehe ich etwas tiefer auf einige Konzepte und Bauteile ein, die für die Umsetzung dieses Projektes von Nöten sind.</p>
+
+<h3>Inertiale Messeinheit (IMU)</h3>
+
+<p>Als <em>Inertiale Messeinheit</em> (engl.: „<em>Inertial Measurment Unit</em>”, kurz <em>IMU</em>) beschreibt man einen Sensor, mit welchem die Lage und Bewegung im Physikalischen Raum festgestellt werden kann. Ein solcher Sensor beinhaltet überlicherweise einen <em>Beschleunigungssensor</em> und einen <em>Drehratensensor</em>. Für meine Anwendung ist neben diesen beiden Sensoren auch ein <em>Magnetfeldsensor</em> vorhanden, welches — wenn den richtig kalibriert — das magnetische Feld der Erde erfassen soll.</p>
+
+<p>Man spricht von einem Sensor mit 9 Freiheitsgeraden (9 DOF — Dimension of Freedom)</p>
+
+<h3>Magnetische Störungen</h3>
+
+<p>Um das Erdmagnetfeld richtig erfassen zu können, müssen zu beginn sämtlich magnetischen Störgrößen erfasst und herausgerechnet werden. Dieser Prozess ist als „Kalibrieren des Sensors” bekannt und muss auch bei einem Smartphone vor der Verwendung des Kompass durchgeführt werden. <sup><a id="ffn1" href="#fn1" class="footnote">1</a></sup> </p>
+
+<p>Es gibt zwei Art von auftretenden Störgrößen: </p>
+
+<p><strong>Hard Iron Distortion</strong></p>
+
+<p><em>Hard Iron Sources</em> sind Magnetfelder die sich mit dem Sensor bewegen und so für eine konstant gleiche Verfälschung der Daten sorgen. Mögliche Gründe dafür sind benachbarte, ferromagnetische Bauteile auf dem PCB oder im Gehäuse.</p>
+
+<p><strong>Soft Iron Distortion</strong></p>
+
+<p></p>
+
+<p><br/></p>
+
+<p><sup><a id="ffn2" href="#fn2" class="footnote">2</a></sup></p>
+
+<h3>Das Erdmagnetfeld</h3>
+
+<p>Nachdem wir die magnetischen Störgrößen herausgefiltert haben werden wir schnell feststellen, dass die gemessenen Daten unseres Magnetometers nicht in Richtung geographischen Norden zeigen werden.</p>
+
+<div class="block" style="position: relative;">	
+	<p class="block-title">Unterschied zwischen Geographischem und Magnetischem Nordpol</p>
+	<div style="display: flex; position: relative;align-items: flex-start;">
+	<p stlye="float: left;">Wohingegen der Geogeraphische Nordpol immer an der selben stelle zu finden ist, verschiebt sich der Magnetische Nordpol jedes Jahr um ein paar Kilometer.
+</p>
+<img style="width: 45%; object-fit: contain;" src="https://www.dw.com/image/47043001_7.png">
+</div>
+</div> 
+<p><br/>Der Grund für die Abweichung zwischen dem magnetischen und geographischen Norden ist, dass sich unser Schutzschild (das Erdmagnetfeld) permanent verändert und verschiebt. <br/>Zu allem Übel verlaufen die Erd-Magnetfeldlinien auf unserem Breitengrad nicht Horizontal zur Erdoberfläche sondern versinken in einem bestimmten Winkel in die Erde. Dieser Winkel wird die magnetische <em>Inklination</em> gennant. Auf Nachfolgender Karte, von den <em>National Centers for Enviormental Information</em> (kurz <em>NOAA</em>) lässt sich dieser Wert für jeden Ort der Erde ablesen. <sup><a id="ffn3" href="#fn3" class="footnote">3</a></sup></p>
+
+<figure><img src="WMM2020_I_BoZ_MILL.pdf.jpg" alt="Karte für die Ende 2019 gemessene magnetische Inklination"/><figcaption>Karte für die Ende 2019 gemessene magnetische Inklination</figcaption></figure>
+
+<p>Als <em>Deklination</em> wird der Winkel zwischen magnetischem und geographischen Norden bezeichnet. Es ist also die Abweichung zwischen den beiden.</p>
+
+<p>Bei einer Deklination von bspw. 10° an unserer Position hätte das zur folge, dass wenn wir einen Kompass betrachten die Nadel leicht nach rechts zeigen müsste, damit wir in Richtung Norden schauen. </p>
+
+<p>Da unser Gerät natürlich in Richtung des geographischen Nordens ausgerichtet seien soll müssen wir diese Abweichung später mit in unsere Berechnung mit einfließen lassen.</p>
+
+<figure><img src="WMM2020_D_BoZ_MILL.pdf.jpg" alt="Karte für die Ende 2019 gemessene magnetische Deklanation"/><figcaption>Karte für die Ende 2019 gemessene magnetische Deklanation</figcaption></figure>
+
+<p>Die Inklination und Deklination kann im folgenden für die angegebenen Koordinaten berechnet werden. Die Daten kommen von <a href="https://amentum.space/">Amentum Aerospace</a> (<a href="https://globalmagnet.amentum.space/wmm/ui/#!/Click32to32view32documentation32for32API32endpoints/app_api_wmm_endpoints_WMM_magnetic_field">API</a>). </p>
+
+<input style="margin-top: 20px" class="input" type="decimal" placeholder="Latitude" id="lat" required>
+<input class="input" type="decimal" placeholder="Longitude" id="lng" required>
+<button id="magBtn" onclick="loadMagData()">Laden</button>
+
+<p style="text-align: center; background-color: #eee; padding: 4px; border-radius: 4px; display: none;" id="magData">Die Deklination an diesem Ort beträgt: <b>2,4°</b></p>
+<p><p style="font-size: 80%; color: #555; text-align: center">Das Ergbeniss wir mit einem "." als Komma dargestellt.</p></p>
+
+<h3>GPS </h3>
+
+<p>Die Ermittlung der aktuellen GPS-Koordinaten, des Nutzers erfolgt über die zum Gerät zugehörige Smartphone App. Diese Architektur ist zwar nicht gerade Nutzerfreundlich aber schneller für mich zu realisieren, da das Smartphone bereits mit einigen Bibliotheken für die Verwendung des integrierten GPS Moduls kommt.</p>
+
+<hr />
+
+<h2>Berechnungen</h2>
+
+<h3>Route</h3>
+
+<p>Die Route liegt im Handy als Liste von Wegpunkten, als eine <em>GPX Datei</em>, vor. Jeder Wegpunkt besitzt eine Koordinate, welche nacheinander die gewünschte Tour ergibt.</p>
+
+<p>Kommt der Nutzer einem Wegpunkt nahe so soll automatisch der nächste Wegpunkt ausgewählt werden. </p>
+
+<p>In dem nachfolgenden Konzept wird die aktuelle Position des Nutzers mit dem Blauen Punkt dargestellt. Der Blau Transparente Kreis ist der Detektionsradius in welchem ein Wegpunkt erkannt und der nächste Wegpunkt ausgewählt wird.</p>
+
+<figure><img src="Artboard-2.png" alt="Konzept zur Abarbeitung einer Route"/><figcaption>Konzept zur Abarbeitung einer Route</figcaption></figure>
+
+<p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App eine manuelle Auswahl des nächsten Wegpunktes geben.</p>
+
+<h3>Kalibrierung</h3>
+
+<p>Die Kalibrierung, des Magnetfeldsensors dient dazu sämtlich Störgrößen herauszufinden und schlussendlich aus den Messdaten abzuziehen. Welche Störgrößen es zu beachten gibt habe ich im Teil „<a href="#magnetischeStörungen">Magnetische Störungen</a>” näher erläutert.</p>
+
+<p><strong>Hard-Ironing</strong></p>
+
+<p>Sorgt für eine Verschiebung des Zentrums der Messdaten.</p>
+
+<p><strong>Soft-Ironing</strong></p>
+
+<p>Sorgt für eine Streckung bzw. Stauchung der Messdaten.</p>
+
+<p></p>
+
+<h3>Laufender Betrieb</h3>
+
+<p>Um die Inklination des Magnetfeldes zu kompensieren und die 3 dimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
+
+<hr />
+
+<h2>Schaltung</h2>
+
+<p></p>
+
+<p>PCB Schematics</p>
+
+<hr />
+
+<h2>Bauteilliste</h2>
+
+<p>Neben den verwendeten Bauteilen habe ich auch den Grund für die Verwendung sowie einige zusätzliche Ressourcen angegeben.</p>
+
+<ul>
+	<li>Mikrocontroller: <a href="https://www.espressif.com/en/products/socs/esp32/overview">ESP32-WROOM-32U</a> (<a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf">ESP32 Datasheet</a>, <a href="">esp32.net</a>)
+
+		<ul>
+			<li>Ich habe mich für diesen Mikrocontroller entschieden da er bereits mit einem eingebauten Bluetooth Modul daherkommt.</li>
+		</ul></li>
+	<li>Akku: 3,7V Lithium-Polymer-Akku</li>
+	<li>IMU: </li>
+	<li>LED Ring: <a href="https://www.adafruit.com/product/1463">Adafruit 16 LED NeoPixel Ring</a></li>
+</ul>
+
+<hr />
+
+<h2>Quellenverzeichnis</h2>
+
+<blockquote>
+<p>Die Bauteile Bibliotheken habe ich mir auf <a href="https://www.snapeda.com/">SnapEDA.com</a> heruntergeladen.</p>
+</blockquote>
+
+<script>
+/* Preferences */
+
+let min = 2
+let max = 6
+
+let blacklist = [
+  'Inhaltsverzeichnis',
+  'Ausarbeitung für Embedded Systems 1'
+]
+
+/* =========== */
+
+var headers = []
+
+window.onload = function() {
+	loadLastUpdatedBitbucket('kuhltime', '')
+  	generateTableOfContent()
+}
+
+
+/* Functions */
+
+function loadLastUpdatedBitbucket(user, repo) {
+	let $field = document.getElementById('lastUpdated')
+	let url = `https://api.bitbucket.org/2.0/repositories/${user}/${repo}/`
+
+	fetchAsync(url)
+		.then(data => { 
+			let updated = new Date(data.updated_on)
+
+			console.log(data)
+
+			let options = { 
+				year: 'numeric', 
+				month: 'long', 
+				day: 'numeric'
+			}
+	
+			$field.innerHTML = updated.toLocaleDateString('de-DE', options)
+		})
+		.catch(error => { 
+			$field.innerHTML = 'Repository is Marked Private'
+			$field.style.color = '#FD2220'
+			console.error(error)
+			console.error('The is unavailable or marked as private')
+		})
+}
+
+function generateTableOfContent() {
+	let $toc = document.getElementById('toc')
+
+	$toc.innerHTML = 'Lädt ...'
+
+	// gets all the headers that are available
+  headers = getHeaders(min, max)
+	
+  // The html string that gets populated and later displayed inside the
+  // table of content #toc element
+  var html = ''
+  
+  // The previousValue stores the depth of the last header
+  var previousValue = min - 1
+
+  headers.forEach(($header, index) => {
+  	// Get values
+    let headerValue = parseInt($header.localName.charAt(1))
+    let difference = previousValue - headerValue
+    let title = $header.innerHTML
+    let camelTitle = toCamelCase(title)
+
+		// Check if title is blacklisted
+    if (blacklist.includes(title)) {
+      return
+    }
+    
+    // Update header id
+    $header.id = camelTitle
+
+    var i = 0
+
+		// Add wrapper
+    if (difference > 0) {
+      // Go out
+      for (i; i < Math.abs(difference); i++) {
+        html += '</ul>'
+        previousValue--
+      }
+
+    } else if (difference < 0) {
+      // Go in
+      for (i; i < Math.abs(difference); i++) {
+        html += '<ul>'
+        previousValue++
+      }
+    }
+
+		// Add list item
+    html += `<li><a href="#${camelTitle}">${title}</a></li>`
+  })
+
+  $toc.innerHTML = html
+}
+
+function loadMagData() {
+	const lat = parseFloat(document.getElementById('lat').value)
+	const lng = parseFloat(document.getElementById('lng').value)
+
+
+	if (lat == NaN || lng == NaN) {
+		console.error('Invalid data')
+		return
+	}
+
+	const year = new Date().getFullYear()	
+
+	const url = `https://globalmagnet.amentum.space/wmm/magnetic_field?altitude=0&latitude=${lat}&longitude=${lng}&year=${year}`
+	const $field = document.getElementById('magData')
+
+	const $btn = document.getElementById('magBtn')
+	$btn.innerHTML = "Lädt..."
+	$btn.disabled = true
+
+	fetchAsync(url)
+		.then(data => {
+			console.log(data)
+			const dec = data.declination.value.toFixed(1)
+			const inc = data.inclination.value.toFixed(1)
+			const strength = (data.total_intensity.value / 1000).toFixed(0)
+
+			$field.innerHTML = `Deklination: ${dec}°<br>Inklination: ${inc}°<br>Stärke: ${strength}mT`
+			$field.style.display = "block"
+			$field.style.color = 'black'
+
+			$btn.innerHTML = "Laden"
+			$btn.disabled = false
+		})
+		.catch(error => {
+			console.error(error)
+			$field.innerHTML = "Error. Open up console for more information!"
+			$field.style.display = "block"
+			$field.style.color = '#FD2220'
+
+			$btn.innerHTML = "Laden"
+			$btn.disabled = false
+		})
+}
+
+function getHeaders(min, max) {
+  var tagNames = ''
+  var i = min
+
+  for (i; i <= max; i++) {
+    tagNames += `h${i}`
+    if (i != max) {
+      tagNames += ','
+    }
+  }
+
+  return document.querySelectorAll(tagNames)
+}
+
+// https://stackoverflow.com/a/2970588/4179020
+function toCamelCase(str) {
+  return str
+    .replace(/\s(.)/g, function($1) {
+      return $1.toUpperCase();
+    })
+    .replace(/\s/g, '')
+    .replace(/^(.)/, function($1) {
+      return $1.toLowerCase();
+    });
+}
+
+//https://gist.github.com/msmfsd/fca50ab095b795eb39739e8c4357a808 
+// async function
+async function fetchAsync (url) {
+  // await response of fetch call
+  let response = await fetch(url);
+  // only proceed once promise is resolved
+  let data = await response.json();
+  // only proceed once second promise is resolved
+  return data;
+}
+
+/* ========= */
+</script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath:[['$','$']]}});</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=default' async></script>
+<ol id="footnotes">
+	<li id="fn1">Douglas, B. (2019). Understanding Sensor Fusion and Tracking, Part 2: Fusing a Mag, Accel, &amp; Gyro Estimate. MatLab auf YouTube. Zugriff: 17. Juni 2020 <br/><a href="">https://www.youtube.com/watch?v=0rlvvYgmTvI</a> <a href="#ffn1">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn2">Wahdan, A., Georgy, J., Abdelfatah, W.F. and Noureldin, A. (2014). Magnetometer Calibration for Portable Navigation Devices in Vehicles Using a Fast and Autonomous Technique. IEEE Transactions on Intelligent Transportation Systems, 15(5), p.2. Zugriff: 20. Juni 2020<br/><a href="">https://www.researchgate.net/publication/266082960_Magnetometer_Calibration_<br/>for_Portable_Navigation_Devices_in_Vehicles_Using_a_Fast_and_<br/>Autonomous_Technique</a> <a href="#ffn2">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn3">National Centers for Environmental Information (NCEI) (2019). World Magnetic Model. Noaa.gov. Zugriff: 18. Juni 2020. <br/><a href="">https://www.ngdc.noaa.gov/geomag/WMM/</a> <a href="#ffn3">&#x21A9;&#xFE0E;</a></li>
+</ol></body>
+</html>
+
