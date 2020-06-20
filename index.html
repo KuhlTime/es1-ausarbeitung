@@ -77,7 +77,7 @@
 
 <h3>Inertiale Messeinheit (IMU)</h3>
 
-<p>Als <em>Inertiale Messeinheit</em> (engl.: „<em>Inertial Measurment Unit</em>”, kurz <em>IMU</em>) beschreibt man einen Sensor, mit welchem die Lage und Bewegung im Physikalischen Raum festgestellt werden kann. Ein solcher Sensor beinhaltet überlicherweise einen <em>Beschleunigungssensor</em> und einen <em>Drehratensensor</em>. Für meine Anwendung ist neben diesen beiden Sensoren auch ein <em>Magnetfeldsensor</em> vorhanden, welches — wenn den richtig kalibriert — das magnetische Feld der Erde erfassen soll.</p>
+<p>Als <em>Inertiale Messeinheit</em> (engl.: „<em>Inertial Measurment Unit</em>”, kurz: <em>IMU</em>) beschreibt man einen Sensor, mit welchem die Lage und Bewegung im Physikalischen Raum festgestellt werden kann. Ein solcher Sensor beinhaltet überlicherweise einen <em>Beschleunigungssensor</em> und einen <em>Drehratensensor</em>. Für meine Anwendung ist neben diesen beiden Sensoren auch ein <em>Magnetfeldsensor</em> vorhanden, welches — wenn den richtig kalibriert — das magnetische Feld der Erde erfassen soll.</p>
 
 <p>Man spricht von einem Sensor mit 9 Freiheitsgeraden (9 DOF — Dimension of Freedom)</p>
 
@@ -111,7 +111,7 @@
 <img style="width: 45%; object-fit: contain;" src="https://www.dw.com/image/47043001_7.png">
 </div>
 </div> 
-<p><br/>Der Grund für die Abweichung zwischen dem magnetischen und geographischen Norden ist, dass sich unser Schutzschild (das Erdmagnetfeld) permanent verändert und verschiebt. <br/>Zu allem Übel verlaufen die Erd-Magnetfeldlinien auf unserem Breitengrad nicht Horizontal zur Erdoberfläche sondern versinken in einem bestimmten Winkel in die Erde. Dieser Winkel wird die magnetische <em>Inklination</em> gennant. Auf Nachfolgender Karte, von den <em>National Centers for Enviormental Information</em> (kurz <em>NOAA</em>) lässt sich dieser Wert für jeden Ort der Erde ablesen. <sup><a id="ffn3" href="#fn3" class="footnote">3</a></sup></p>
+<p><br/>Der Grund für die Abweichung zwischen dem magnetischen und geographischen Norden ist, dass sich unser Schutzschild (das Erdmagnetfeld) permanent verändert und verschiebt. <br/>Zu allem Übel verlaufen die Erd-Magnetfeldlinien auf unserem Breitengrad nicht Horizontal zur Erdoberfläche sondern versinken in einem bestimmten Winkel in die Erde. Dieser Winkel wird die magnetische <em>Inklination</em> gennant. Auf Nachfolgender Karte, von den <em>National Centers for Enviormental Information</em> (kurz: <em>NOAA</em>) lässt sich dieser Wert für jeden Ort der Erde ablesen. <sup><a id="ffn3" href="#fn3" class="footnote">3</a></sup></p>
 
 <figure><img src="WMM2020_I_BoZ_MILL.pdf.jpg" alt="Karte für die Ende 2019 gemessene magnetische Inklination"/><figcaption>Karte für die Ende 2019 gemessene magnetische Inklination</figcaption></figure>
 
@@ -150,7 +150,29 @@
 
 <figure><img src="Artboard-2.png" alt="Konzept zur Abarbeitung einer Route"/><figcaption>Konzept zur Abarbeitung einer Route</figcaption></figure>
 
-<p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App eine manuelle Auswahl des nächsten Wegpunktes geben.</p>
+<p>Eine mögliche Überprüfung, ob sich die Person in Reichweite eine Wegpunktes befindet könnte wie folgt in <strong>Swift</strong> umgesetzt werden. Es handelt sich hier um Pseudocode und funktioniert so noch nicht direkt in der App.</p>
+
+<pre><code class="code-highlighted code-swift"><span class="syntax-all syntax-comment">/**
+</span><span class="syntax-all syntax-comment"> Die Funktion prüft ob sich der Wegpunkt (wp) im Radius 
+</span><span class="syntax-all syntax-comment"> (radius) der aktuellen Position des Nutzers (pos) 
+</span><span class="syntax-all syntax-comment"> befindet und gibt das Ergebnis als Boolean zurück.
+</span><span class="syntax-all syntax-comment"> */</span>
+
+<span class="syntax-all syntax-keyword">func</span> <span class="syntax-all syntax-entity">checkInBounds</span>(
+	<span class="syntax-all syntax-entity">pos</span>: Coordinate, 
+	<span class="syntax-all syntax-entity">wp</span>: Coordinate, 
+	<span class="syntax-all syntax-entity">radius</span>: <span class="syntax-all syntax-constant">Double</span>
+) <span class="syntax-all syntax-keyword">-&gt;</span> <span class="syntax-all syntax-constant">Bool</span> {
+	<span class="syntax-all syntax-comment">// Die Entfernung zwischen der Position und dem 
+</span>	<span class="syntax-all syntax-comment">// Wegpunkt
+</span>	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">distance</span>(<span class="syntax-all syntax-constant">to</span>: wp)
+
+	<span class="syntax-all syntax-comment">// Prüfen pb die Entfernung zum Wegpunkt kleiner ist
+</span>	<span class="syntax-all syntax-comment">// als der Detektionsradius
+</span>	<span class="syntax-all syntax-keyword">return</span> entfernung <span class="syntax-all syntax-keyword">&lt;</span> radius
+}</code></pre>
+
+<p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
 
 <h3>Kalibrierung</h3>
 
@@ -168,7 +190,7 @@
 
 <h3>Laufender Betrieb</h3>
 
-<p>Um die Inklination des Magnetfeldes zu kompensieren und die 3 dimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
+<p>Um die Inklination des Magnetfeldes zu kompensieren und die dreidimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
 
 <hr />
 
