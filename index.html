@@ -8,7 +8,7 @@
 <body>
 <figure><img src="Artboard.png"/></figure>
 
-<h1>Navitron: Ein Portabler Navigationskompass</h1>
+<h1>Navitron - Ein Portabler Navigationskompass <br/><br/>Von der Planung bis zur Produktion</h1>
 
 <h3>Ausarbeitung für Embedded Systems 1</h3>
 
@@ -27,61 +27,77 @@
 <div id="toc"></div>
 <hr />
 
-<h2>Einleitung</h2>
+<h2>1. Einleitung</h2>
 
-<p>Begonnen hat alles mit einer Mountainbike-Tour, mit meinem Vater. Die Tour die wir fahren wollten hatten wir zuvor in einer Outdoor-App auf unser Handy heruntergeladen doch trotz des elektronischen Helfers in der Tasche mussten wir alle paar Meter nach der richtigen Abzweigung Ausschau halten. <br/>Da mir und meinem Vater das ständige rausholen des Handys irgendwann auf die Nerven ging machte ich mich im Internet nach einer Alternative schlau.<br/>Ich stieß damals auf einen Kickstarter Eintrag namens „<a href="https://www.kickstarter.com/projects/smarthalo/smarthalo-turn-your-bike-into-a-smart-bike?lang=de" title="SmartHalo"><em>SmartHalo</em></a>”.</p>
+<p>Begonnen hat alles mit einer Mountainbike-Tour, mit meinem Vater. Die Tour die wir fahren wollten hatten wir zuvor in einer Outdoor-App auf unser Handy heruntergeladen doch trotz des elektronischen Helfers in der Tasche mussten wir alle paar Meter nach der richtigen Abzweigung ausschau halten. <br/>Da mir und meinem Vater das ständige rausholen des Handys irgendwann auf die Nerven ging machte ich mich im Internet nach einer Alternative schlau.<br/>Ich stieß damals auf einen Kickstarter Eintrag namens „<a href="https://www.kickstarter.com/projects/smarthalo/smarthalo-turn-your-bike-into-a-smart-bike?lang=de" title="SmartHalo"><em>SmartHalo</em></a>”.</p>
 
-<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher gehabt und konnte diese Direkt auf einem Breadboard testen. </p>
+<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher gehabt und konnte diese direkt auf einem Breadboard testen. </p>
 
 <p>Ich habe das Dokument in einige Themenbereiche gegliedert, in denen ich einzeln auf einige Besonderheiten des Projektes eingehe.</p>
 
-<p>Da die Aufgabe darin bestand eine Audio- oder Videodatei aufzunehmen, nutze ich diese schriftliche Ausarbeitung als eine Art Skript für meine Videos.</p>
+<p>Da die Aufgabe darin bestand eine Audio- oder Videodatei aufzunehmen, nutze ich diese schriftliche Ausarbeitung als ein Skript für mein Video.</p>
 
-<h3>Showcase</h3>
+<h3>1.1 Showcase</h3>
 
 <p></p>
 
 <hr />
 
-<h2>Umsetzung</h2>
-
-<h3>Plannung</h3>
+<h2>2. Plannung</h2>
 
 <ul>
 	<li>Der Ring soll die Richtung anzeigen in die der Nutzer fahren soll</li>
 	<li>Das Gerät sollte einen Akku eingebaut haben (LiPo)</li>
-	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung mit dem Smartphone erhalten</li>
+	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung von dem Smartphone erhalten</li>
 </ul>
 
 <figure><img src="Artboard-1.png" alt="Aufgabenverteilung und Funktionsbausteine der beiden Geräte"/><figcaption>Aufgabenverteilung und Funktionsbausteine der beiden Geräte</figcaption></figure>
 
-<h3>Das Gerät</h3>
-
-<p>Das Gerät selber habe ich „<em>Navitron</em>” getauft, einen triftigen Grund gab es nicht. Ich fand der Name klang ganz schön.</p>
-
-<p>Die Schaltung für das Gerät, welches schlussendlich am Lenker meines Fahrrads montiert werden soll habe ich in Eagle entworfen. </p>
-
-<h4>USB to Serial Converter</h4>
-
-<p>Um ein schnelles umprogrammieren des Mikrocontrollers zu ermöglichen habe ich mich für die Verwendung eines USB to Serial Converter entschieden. Damit lassen sich Programmupdates ohne großen Aufwand direkt auf den Chip des Navitron flashen. </p>
-
-<h3>Die App</h3>
-
-<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung sowie die Einpflegung und Verarbeitung der Route über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen.</p>
+<figure><img src="IMG_0576.jpg" alt="Bestimmung der Größe des PCBs"/><figcaption>Bestimmung der Größe des PCBs</figcaption></figure>
 
 <hr />
 
-<h2>Beschreibung</h2>
+<h2>3. Umsetzung</h2>
+
+<h3>3.1 Das Gerät</h3>
+
+<p>Die Schaltung für das Gerät, welches schlussendlich am Lenker meines Fahrrads montiert werden soll habe ich in Eagle entworfen.</p>
+
+<p>Im nachfolgenden werde ich näher auf die Wahl meiner verwendeten Bauteile eingehen.</p>
+
+<h4>3.1.1 Mikrocontroller</h4>
+
+<figure><img src="3320-06.jpg"/></figure>
+
+<p>Als Herz meiner Schaltung habe ich mich für einen <strong>ESP32</strong> der Firma Espressif entschieden, da ich bereits häufiger mit diesem Mikrocontroller gearbeitet habe und er bereits über die nötige Bluetooth Schnittstelle verfügt.<br/>Anders als viele Atmel Mikrocontroller läuft dieser nicht auf den üblichen $5$ Volt sondern $3.3$ Volt. Für die Aufgabe ist dieser Mikrocontroller sehr wahrscheinlich überdimensioniert und könnte wahrscheinlich durch einen sparsameren Mikrocontroller ersetz werden. Zeit war hier ein entschiedener Faktor.</p>
+
+<h4>3.1.2 LED-Ring</h4>
+
+<figure><img src="2856-01.gif" alt="https://www.adafruit.com/product/2856"/><figcaption>https://www.adafruit.com/product/2856</figcaption></figure>
+
+<p>Für den LED-Ring verwendet ich <strong>WS2812B</strong>.<br/>Diese von der Firma Worldsemi hergestellten RGB-LEDs sind einzeln ansteuerbare LEDs die über einen Datenpin ihre gewünschte Farbe erhalten. Jede weitere LED kann über den Datenausgang in Reihe verschaltet werden.<br/>Für die LEDs wird eine Spannung von $3.5\text{V}\ bis\ 5.3\text{V}$ benötigt, welche ohne einen Spannungsbooster für die Batterie möglich seien sollte. Mit geringerer Spannung kommt es zu deutlich erkennbaren Farbverfälschung. <br/>Das ansteuern mit den $3.3\text{V} $ des ESP Ausgangs hat bei meinen Tests ohne Probleme funktioniert. Falls es hier allerdings zu Problemen mit dem ansteuern der LEDs kommt müsste eventuell ein passender Level Shifter verwendet werden.</p>
+
+<h4>3.1.3 USB to Serial Converter</h4>
+
+<p>Um ein schnelles umprogrammieren des Mikrocontrollers zu ermöglichen habe ich mich für die Verwendung eines USB to Serial Converter entschieden. Damit lassen sich Programmupdates ohne großen Aufwand direkt auf den Chip des Navitron flashen. Für das Design habe ich auf Open Source Schaltungen der Firma <a href="https://www.sparkfun.com/products/15006?utm_campaign=LoRa%20Gateway%20ESP32&amp;utm_source=2nd%20Featured%20Content">Sparkfun</a> zurückgegriffen. </p>
+
+<h3>3.2 Die App</h3>
+
+<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung sowie die Einpflegung und Verarbeitung der Route über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen, so dass schlussendlich nur der gewünschte und der momentane Kurs von dem Gerät verglichen werden muss.</p>
+
+<hr />
+
+<h2>4. Beschreibung</h2>
 
 <p>In diesem Teil gehe ich etwas tiefer auf einige Konzepte und Bauteile ein, die für die Umsetzung dieses Projektes von Nöten sind.</p>
 
-<h3>Inertiale Messeinheit (IMU)</h3>
+<h3>4.1 Inertiale Messeinheit (IMU)</h3>
 
 <p>Als <em>Inertiale Messeinheit</em> (engl.: „<em>Inertial Measurment Unit</em>”, kurz: <em>IMU</em>) beschreibt man einen Sensor, mit welchem die Lage und Bewegung im Physikalischen Raum festgestellt werden kann. Ein solcher Sensor beinhaltet überlicherweise einen <em>Beschleunigungssensor</em> und einen <em>Drehratensensor</em>. Für meine Anwendung ist neben diesen beiden Sensoren auch ein <em>Magnetfeldsensor</em> vorhanden, welches — wenn den richtig kalibriert — das magnetische Feld der Erde erfassen soll.</p>
 
 <p>Man spricht von einem Sensor mit 9 Freiheitsgeraden (9 DOF — Dimension of Freedom)</p>
 
-<h3>Magnetische Störungen</h3>
+<h3>4.2 Magnetische Störungen</h3>
 
 <p>Um das Erdmagnetfeld richtig erfassen zu können, müssen zu beginn sämtlich magnetischen Störgrößen erfasst und herausgerechnet werden. Dieser Prozess ist als „Kalibrieren des Sensors” bekannt und muss auch bei einem Smartphone vor der Verwendung des Kompass durchgeführt werden. <sup><a id="ffn1" href="#fn1" class="footnote">1</a></sup> </p>
 
@@ -99,7 +115,7 @@
 
 <p><sup><a id="ffn2" href="#fn2" class="footnote">2</a></sup></p>
 
-<h3>Das Erdmagnetfeld</h3>
+<h3>4.3 Das Erdmagnetfeld</h3>
 
 <p>Nachdem wir die magnetischen Störgrößen herausgefiltert haben werden wir schnell feststellen, dass die gemessenen Daten unseres Magnetometers nicht in Richtung geographischen Norden zeigen werden.</p>
 
@@ -131,17 +147,17 @@
 <button id="magBtn" onclick="loadMagData()">Laden</button>
 
 <p style="text-align: center; background-color: #eee; padding: 4px; border-radius: 4px; display: none;" id="magData">Die Deklination an diesem Ort beträgt: <b>2,4°</b></p>
-<p><p style="font-size: 80%; color: #555; text-align: center">Das Ergbeniss wir mit einem "." als Komma dargestellt.</p></p>
+<p><p style="font-size: 80%; color: #555; text-align: center">Das Ergebnis wird mit einem "." als Komma dargestellt.</p></p>
 
-<h3>GPS </h3>
+<h3>4.4 GPS </h3>
 
 <p>Die Ermittlung der aktuellen GPS-Koordinaten, des Nutzers erfolgt über die zum Gerät zugehörige Smartphone App. Diese Architektur ist zwar nicht gerade Nutzerfreundlich aber schneller für mich zu realisieren, da das Smartphone bereits mit einigen Bibliotheken für die Verwendung des integrierten GPS Moduls kommt.</p>
 
 <hr />
 
-<h2>Berechnungen</h2>
+<h2>5. Berechnungen</h2>
 
-<h3>Route</h3>
+<h3>5.1 Route</h3>
 
 <p>Die Route liegt im Handy als Liste von Wegpunkten, als eine <em>GPX Datei</em>, vor. Jeder Wegpunkt besitzt eine Koordinate, welche nacheinander die gewünschte Tour ergibt.</p>
 
@@ -151,7 +167,7 @@
 
 <figure><img src="Artboard-2.png" alt="Konzept zur Abarbeitung einer Route"/><figcaption>Konzept zur Abarbeitung einer Route</figcaption></figure>
 
-<p>Eine mögliche Überprüfung, ob sich die Person in Reichweite eine Wegpunktes befindet könnte wie folgt in <strong>Swift</strong> umgesetzt werden. Es handelt sich hier um Pseudocode und funktioniert so noch nicht direkt in der App.</p>
+<p>Eine mögliche Überprüfung, ob sich die Person in Reichweite eines Wegpunktes befindet könnte wie folgt in <strong>Swift</strong> umgesetzt werden. Es handelt sich hier um Pseudocode und funktioniert so noch nicht direkt in der App.</p>
 
 <pre><code class="code-highlighted code-swift"><span class="syntax-all syntax-comment">/**
 </span><span class="syntax-all syntax-comment"> Die Funktion prüft ob sich der Wegpunkt (wp) im Radius 
@@ -175,9 +191,33 @@
 
 <p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
 
-<h3>Kalibrierung</h3>
+<h3>5.2 Entfernung zweier Koordinaten</h3>
 
-<p>Die Kalibrierung, des Magnetfeldsensors dient dazu sämtlich Störgrößen herauszufinden und schlussendlich aus den Messdaten abzuziehen. Welche Störgrößen es zu beachten gibt habe ich im Teil „<a href="#magnetischeStörungen">Magnetische Störungen</a>” näher erläutert.</p>
+<p>Um automatisch den nächsten Wegpunkt auszuwählen muss die Entfernung zum nächsten Wegpunkt bestimmt werden. Bei Koordinaten handelt es sich um Positionen auf einer Kugeloberfläche. Gehen wir davon aus, dass die Erde eine glatte Kugel ist so lässt sich die Erde mit der Funktion $x^2+y^2+z^2=(6378.13 \text{km})^2$ darstellen. </p>
+
+<div class="block" style="position: relative;">	
+	<p class="block-title">Erdellipse statt Erdkugel?</p>
+	<div style="display: flex; position: relative; align-items: flex-start;">
+		<p style="flex: 1 1 0; flex-basis: 100%; margin-right: 8px;">Tatsächlich ist die Erde aufgrund der durch die Erdrotation auftretenden Fliehkräfte keine perfekt Kugel sondern ist zum Equator hin gestreckt. Das Bild rechts zeigt eine überzogene Darstellung dieser Ausdehnung. Tatsählich liegen die maximale Stauchung und maximale Streckung lediglich 22km auseinander. Was bezogen auf den Erdradius eine Differenz von 0,3% ausmacht und daher für unsere Berechnungen keinen all zu großen Einfluss haben sollte.
+	<br>
+<a href="https://gis.stackexchange.com/a/25580">StackExchange (Geographical Information Systems)</a>
+</p>
+<img style="flex: 1 1 0; flex-basis: 50%; width: 0; overflow: hidden; border-radius: 4px;" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/OblateSpheroid.PNG">	
+</div>
+</div>
+<p>Die $6378.13km$ (<a href="[https://www.wolframalpha.com/input/?i=earthradius]">WolframAlpha</a>) entsprechen dabei der Strecke vom Erdmittelpunkt bis hin zum Erdmantel, also dem Radius r der Erde.</p>
+
+<figure><img src="kugel.svg" alt="Radius r der Erdkugel"/><figcaption>Radius r der Erdkugel</figcaption></figure>
+
+<p>Zur Entfernungsberechnung müssen die geographischen <em>zwei dimensionalen</em> Koordinaten (lat, lng) in <em>drei dimensionale</em> ellipsoidische Koordinaten (x, y, z) umgewandelt werden. Dies ergibt einen Punkt auf der Kugeloberfläche.</p>
+
+<p>Um nun die Distanz zwischen den zwei sich auf der Kugel befindlichen Koordinaten zu finden.</p>
+
+<p>(Berechnung) <sup><a id="ffn4" href="#fn4" class="footnote">4</a></sup></p>
+
+<h3>5.3 Magnetometer Kalibrierung</h3>
+
+<p>Die Kalibrierung, des Magnetfeldsensors dient dazu sämtlich Störgrößen zu ermitteln und schlussendlich aus den Messdaten herauszufiltern. <br/>Welche Störgrößen es zu beachten gibt hatte ich bereits im Teil „<a href="#magnetischeStörungen">Magnetische Störungen</a>” näher erläutert.</p>
 
 <p><strong>Hard-Ironing</strong></p>
 
@@ -189,23 +229,62 @@
 
 <p></p>
 
-<h3>Laufender Betrieb</h3>
+<p>Für die Kalibrierung habe ich ein entsprechendes Python Programm geschrieben, dass mir sowohl die Ausgleichswert für das später auf den Mikrocontroller laufende Programm ausrechnet als auch visuell die Abweichung der Messdaten in einem Koordinatensystem darstellt. </p>
+
+<p></p>
+
+<p></p>
+
+<h3>5.4 Magnetometer Kursbestimmung</h3>
+
+<h3>5.3 Laufender Betrieb</h3>
 
 <p>Um die Inklination des Magnetfeldes zu kompensieren und die dreidimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
 
 <hr />
 
-<h2>Schaltung</h2>
+<h2>6. Schaltung</h2>
 
-<p></p>
+<p>Wie auch im Praktikum habe ich für die Erstellung der Platine das von Autodesk kostenlos zu Verfügung stehende Programm Eagle verwendet. Mit diesem Programm habe ich mehrmals andere, kleinere Schaltungen entworfen und bin mit diesem am besten vertraut. Das Design basiert größtenteils auf Open Source zugängliche Designs der Firma <a href="https://www.sparkfun.com/">Sparkfun</a>. Einige der verwendeten Bauteile habe ich bereits vorher besessen und konnte diese auf einem Breadboard verwenden um einige Design Features im voraus zu testen.</p>
 
-<p>PCB Schematics</p>
+<figure><img src="Navitron%20Seite%202.jpg"/> <img src="Navitron%20Seite%201.jpg"/></figure>
+
+<h3>6.1 Korrektur</h3>
+
+<p>Da ich sichergehen wollte, dass meine Schaltung auch wirklich in vollem Umfang funktioniert, habe ich auf der Freelancer Platform <a href="https://de.fiverr.com/knochi/design-your-custom-electronics?context_referrer=search_gigs&amp;source=your_recently_viewed_gigs&amp;ref_ctx_id=9039e438-964f-4fa9-b083-d1eeb5000c71&amp;pckg_id=1&amp;pos=2&amp;is_pro=false&amp;context_alg=recently_viewed&amp;context=recommendation">Fiverr</a> für ein paar Euro jemanden beauftragt meine Schematic auf Fehler zu überprüfen. Neben einem Widerstand und einem Entkopplungskondensator hat er allerdings keine Fehler feststellen können. Was genau ich an Hilfe bekommen habe können Sie sich ebenfalls in meinem Repository anschauen (damit Sie sehen, dass es mit rechten Dingen zugegangen ist).</p>
+
+<p>Das PCB habe ich zu 100% selber erstellt und ist bis auf einen Entkopplungskodensator hoffentlich funktionsfähig. </p>
+
+<figure><img src="IMG_0579.jpg" alt="Überprüfung jedes Pins des PCB anhand der Schemtischen Schaltung"/><figcaption>Überprüfung jedes Pins des PCB anhand der Schemtischen Schaltung</figcaption></figure>
+
+<h3>6.2 Herstellung</h3>
+
+<p>Bei all meinen bisher erstellten Boards habe ich auf den Chinesischen Hersteller JLCPCB zurückgegriffen. Aus Umweltgründen würde ich gerne einen Deutschen oder doch zumindest Europäischen Hersteller vorziehen konnte aber keine kostengünstige Alternative finden. Selbst mit Expresslieferung ist die Produktion in Fernost um einiges billiger. Auch aufgrund meines doch eher beschränkten Budget für diese Projekt musste ich leider die Umwelttechnischen Konsequenzen ausser acht lassen. Für eine nächste Version, welche ich ohne Zeitdruck entwickeln könnte wäre dies jedoch ein Hauptmerkmal. </p>
+
+<figure><img src="Top.png" alt="Obere Fotomaske für die Photolithografie"/><figcaption>Obere Fotomaske für die Photolithografie</figcaption></figure>
+
+<h3>6.3 Montage</h3>
+
+<p>Neben dem eigentlichen PCB habe ich zudem eine Schablone für das Auftragen der Lötpaste bestellt. Diese ist mit einem Spachtel auf das Board aufzubringen und kann dann mit einem Reflow-Ofen oder einem Heißluftföhn zum schmelzen gebracht werden. Die Komponenten sind vorher vorsichtig auf die entsprechende Stelle zu platzieren.</p>
+
+<p>Am meisten sorgen bereitet mir der IMU der mit seinen gerade einmal 3x3mm und seinen 24 Pins eine echte Herausforderung herausstellt. Auch der doch recht hohe Preis von 7,13$\frac{\text{€}}{\text{Stück}}$ lässt wenig Fehlerspielraum zu. </p>
+
+<h3>6.4 Verbesserung</h3>
+
+<p>Eine eventuelle Nachfolger Version des Gerätes sollte folgendes beinhalten:</p>
+
+<ul>
+	<li>Das Logo, welches ich vergessen habe auf das PCB zu packen.</li>
+	<li>Aus Zeitgründen habe ich es Bissher nicht geschafft ein geeignetes Case zu entwerfen. Dieses sollte wenn möglich Wasserresistent sein um das Gerät vor Spritzwasser und regen zu schützen.</li>
+	<li>Kleine Komponenten mit einem per Pick and Place Service aufbringen lassen. Dafür bietet JLCPCB einen entsprechenden Service an. Eventuell müssen andere Komponenten verwendet werden.</li>
+	<li>Kalibrierungsprogramm in finales Programm integrieren</li>
+</ul>
 
 <hr />
 
-<h2>Bauteilliste</h2>
+<h2>7. Bauteilliste</h2>
 
-<p>Neben den verwendeten Bauteilen habe ich auch den Grund für die Verwendung sowie einige zusätzliche Ressourcen angegeben.</p>
+<p>Neben den verwendeten Bauteilen habe ich auch den Grund für die Verwendung sowie einige zusätzliche Ressourcen angegeben. Die Bauteile habe ich alle bei Digi-Key bestellt.</p>
 
 <ul>
 	<li>Mikrocontroller: <a href="https://www.espressif.com/en/products/socs/esp32/overview">ESP32-WROOM-32U</a> (<a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf">ESP32 Datasheet</a>, <a href="">esp32.net</a>)
@@ -214,13 +293,27 @@
 			<li>Ich habe mich für diesen Mikrocontroller entschieden da er bereits mit einem eingebauten Bluetooth Modul daherkommt.</li>
 		</ul></li>
 	<li>Akku: 3,7V Lithium-Polymer-Akku</li>
-	<li>IMU: </li>
+	<li>IMU: ICM-20948 </li>
 	<li>LED Ring: <a href="https://www.adafruit.com/product/1463">Adafruit 16 LED NeoPixel Ring</a></li>
+</ul>
+
+<h3>7.1 Kosten</h3>
+
+<p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe lagen meine Anschaffungskosten bei etwa 150€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegt meine Ausgabe über den 139€ für den SmartHalo habe aber durch das entwerfen einiges an Erfahrung gewonnen und kann nun auch für meine Familie einen solchen Fahrradcomputer erstellen.</p>
+
+<hr />
+
+<h2>8. Danksagung</h2>
+
+<ul>
+	<li>Danke an <a href="https://www.sparkfun.com/">Sparkfun</a> für das ihre Open Source zugänglichen Schaltungen.</li>
+	<li>Danke an <a href="https://de.fiverr.com/knochi/design-your-custom-electronics?context_referrer=search_gigs&amp;source=your_recently_viewed_gigs&amp;ref_ctx_id=9039e438-964f-4fa9-b083-d1eeb5000c71&amp;pckg_id=1&amp;pos=2&amp;is_pro=false&amp;context_alg=recently_viewed&amp;context=recommendation">Knochi</a> der mir die Korrektur für meine Schaltung geliefert hat.</li>
+	<li>Adafruit</li>
 </ul>
 
 <hr />
 
-<h2>Quellenverzeichnis</h2>
+<h2>9. Quellenverzeichnis</h2>
 
 <blockquote>
 <p>Die Bauteile Bibliotheken habe ich mir auf <a href="https://www.snapeda.com/">SnapEDA.com</a> heruntergeladen.</p>
@@ -419,6 +512,7 @@ async function fetchAsync (url) {
 	<li id="fn1">Douglas, B. (2019). Understanding Sensor Fusion and Tracking, Part 2: Fusing a Mag, Accel, &amp; Gyro Estimate. MatLab auf YouTube. Zugriff: 17. Juni 2020 <br/><a href="">https://www.youtube.com/watch?v=0rlvvYgmTvI</a> <a href="#ffn1">&#x21A9;&#xFE0E;</a></li>
 	<li id="fn2">Wahdan, A., Georgy, J., Abdelfatah, W.F. and Noureldin, A. (2014). Magnetometer Calibration for Portable Navigation Devices in Vehicles Using a Fast and Autonomous Technique. IEEE Transactions on Intelligent Transportation Systems, 15(5), p.2. Zugriff: 20. Juni 2020<br/><a href="">https://www.researchgate.net/publication/266082960_Magnetometer_Calibration_<br/>for_Portable_Navigation_Devices_in_Vehicles_Using_a_Fast_and_<br/>Autonomous_Technique</a> <a href="#ffn2">&#x21A9;&#xFE0E;</a></li>
 	<li id="fn3">National Centers for Environmental Information (NCEI) (2019). World Magnetic Model. Noaa.gov. Zugriff: 18. Juni 2020. <br/><a href="">https://www.ngdc.noaa.gov/geomag/WMM/</a> <a href="#ffn3">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn4"><a href="https://www.movable-type.co.uk/scripts/latlong.html">https://www.movable-type.co.uk/scripts/latlong.html</a> <a href="#ffn4">&#x21A9;&#xFE0E;</a></li>
 </ol></body>
 </html>
 
