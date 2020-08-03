@@ -31,7 +31,7 @@
 
 <p>Begonnen hat alles mit einer Mountainbike-Tour, mit meinem Vater. Die Tour die wir fahren wollten hatten wir zuvor in einer Outdoor-App auf unser Handy heruntergeladen doch trotz des elektronischen Helfers in der Tasche mussten wir alle paar Meter nach der richtigen Abzweigung ausschau halten. <br/>Da mir und meinem Vater das ständige rausholen des Handys irgendwann auf die Nerven ging machte ich mich im Internet nach einer Alternative schlau.<br/>Ich stieß damals auf einen Kickstarter Eintrag namens „<a href="https://www.kickstarter.com/projects/smarthalo/smarthalo-turn-your-bike-into-a-smart-bike?lang=de" title="SmartHalo"><em>SmartHalo</em></a>”.</p>
 
-<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher gehabt und konnte diese direkt auf einem Breadboard testen. </p>
+<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher, als Breakoutboard (Platine zum einfache Entwickeln eines Prototypen), gehabt und konnte diese direkt auf einem Breadboard testen. </p>
 
 <p>Ich habe das Dokument in einige Themenbereiche gegliedert, in denen ich einzeln auf einige Besonderheiten des Projektes eingehe.</p>
 
@@ -46,9 +46,9 @@
 <h2>2. Plannung</h2>
 
 <ul>
-	<li>Der Ring soll die Richtung anzeigen in die der Nutzer fahren soll</li>
-	<li>Das Gerät sollte einen Akku eingebaut haben (LiPo)</li>
-	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung von dem Smartphone erhalten</li>
+	<li>Der Ring soll die Richtung anzeigen in die der Nutzer fahren soll.</li>
+	<li>Das Gerät sollte einen eingebauten Akku besitzen, der einfach wieder aufladbar ist und über eine Tour mindesten 5 Stunden halten soll.</li>
+	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung von dem Smartphone erhalten.</li>
 </ul>
 
 <figure><img src="Artboard-1.png" alt="Aufgabenverteilung und Funktionsbausteine der beiden Geräte"/><figcaption>Aufgabenverteilung und Funktionsbausteine der beiden Geräte</figcaption></figure>
@@ -81,9 +81,39 @@
 
 <p>Um ein schnelles umprogrammieren des Mikrocontrollers zu ermöglichen habe ich mich für die Verwendung eines USB to Serial Converter entschieden. Damit lassen sich Programmupdates ohne großen Aufwand direkt auf den Chip des Navitron flashen. Für das Design habe ich auf Open Source Schaltungen der Firma <a href="https://www.sparkfun.com/products/15006?utm_campaign=LoRa%20Gateway%20ESP32&amp;utm_source=2nd%20Featured%20Content">Sparkfun</a> zurückgegriffen. </p>
 
+<h4>3.1.4 Laderegler</h4>
+
+<p>Da das Gerät später mal am Lenker montiert werden soll ist eine Kabelgebundenen Stromversorgung keine Lösung. Wie bei den meisten Geräten auf dem Markt verwende ich einen Lithium-Polymer Akku der über eine Steckverbindung mit dem Gerät verbunden werden kann. Um nicht jedesmal das Gehäuse öffnen zu müssen um den Akku zu laden verwende ich den <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/MCP73831-Family-Data-Sheet-DS20001984H.pdf">MCP73831</a> Laderegler der Firma Microchip.</p>
+
+<figure><img src="Typical-Application.png" alt="Anwendungsbeispiel aus dem Datenblatt"/><figcaption>Anwendungsbeispiel aus dem Datenblatt</figcaption></figure>
+
+<p>Mit einem Widerstand $\text{R}_{\text{PROG}}\ [\text{k}\Omega]$ lässt sich der maximale Ladestrom für die Batterie einstellen.</p>
+
+<br>
+$\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}} $
+<br><br>
+<div class="block" style="position: relative;">	
+	<p class="block-title">Funktionsweise eines Ladereglers</p>
+	<div style="display: flex; position: relative; align-items: flex-start;">
+		<p style="flex: 1 1 0; flex-basis: 50%; margin-right: 12px;">Ein Laderegler, reguliert Strom <i>I</i> und Spannung <i>V</i> so, dass der LiPo-Akku möglichst schonend geladen wird. Man sieht in der Grafik rechts die Ladekurve mit einen Ladestrom $\text{I}_{\text{REG}}=100\text{mA}$. Erreicht der Akku die gewünschten $4.2\text{V}$ regelt der Laderegler den Strom immer weiter herunter. Das drosseln des Ladestrom geschieht bei etwa 80% Batterieladung.
+	<br>
+</p>
+<div style="flex: 1 1 0; flex-basis: 50%; width: 100%; height: 100%; padding-right: 20px;">
+	<img style="width: 100%; overflow: hidden; border-radius: 4px; border-radius: 3px; border: 10px solid #fff;" src="https://i.postimg.cc/7ZrpX1HX/Bildschirmfoto-2020-07-31-um-11-18-17.png">
+<p style="text-align: center; width: 100%; margin-top: -2px; margin-left: 10px; color: #888; font-size: 12px;">Diagramm aus dem Datenblatt des MCP73831</p>
+</div>
+</div>
+
+</div>
+<p>Ich habe für meine Schaltung einen $\text{R}_{\text{PROG}} = 2\text{k}\Omega$ gewählt. Was meinen Akku mit einem maximalen Ladestrom von  $\text{I}_{\text{REG}}=500\text{mA}$ versorgt.</p>
+
+<h4>3.1.5 Spannungswandler</h4>
+
+<p>Da der Mikrocontroller auf $3.3\text{V}$ und die IMU auf $1.8\text{V}$ laufen habe ich zwei Lineare Spannungswandler mit ausreichend Output Strom verwendet. Mehr Details im Datenblatt des <a href="https://www.diodes.com/assets/Datasheets/AP2112.pdf">AP2112</a>.</p>
+
 <h3>3.2 Die App</h3>
 
-<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung sowie die Einpflegung und Verarbeitung der Route über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen, so dass schlussendlich nur der gewünschte und der momentane Kurs von dem Gerät verglichen werden muss.</p>
+<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung, sowie die Einpflegung und Verarbeitung der Route, über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen. Das Gerät soll dann aus gegebenen Magnetfelddaten und dem berechneten Kurs vom Smartphone den gewünschten Kurs auf den LEDs ausgeben.</p>
 
 <hr />
 
@@ -163,7 +193,7 @@
 
 <p>Kommt der Nutzer einem Wegpunkt nahe so soll automatisch der nächste Wegpunkt ausgewählt werden. </p>
 
-<p>In dem nachfolgenden Konzept wird die aktuelle Position des Nutzers mit dem Blauen Punkt dargestellt. Der Blau Transparente Kreis ist der Detektionsradius in welchem ein Wegpunkt erkannt und der nächste Wegpunkt ausgewählt wird.</p>
+<p>In dem nachfolgenden Konzept wird die aktuelle Position des Nutzers mit dem Blauen Punkt dargestellt. Der Transparente Kreis um den Blauen Punkt ist der Detektionsradius in welchem ein Wegpunkt erkannt und der nächste Wegpunkt ausgewählt wird.</p>
 
 <figure><img src="Artboard-2.png" alt="Konzept zur Abarbeitung einer Route"/><figcaption>Konzept zur Abarbeitung einer Route</figcaption></figure>
 
@@ -175,69 +205,90 @@
 </span><span class="syntax-all syntax-comment"> befindet und gibt das Ergebnis als Boolean zurück.
 </span><span class="syntax-all syntax-comment"> */</span>
 
-<span class="syntax-all syntax-keyword">func</span> <span class="syntax-all syntax-entity">checkInBounds</span>(
+<span class="syntax-all syntax-keyword">func</span> <span class="syntax-all syntax-entity">überprüfenObAmWegpunkt</span>(
 	<span class="syntax-all syntax-entity">pos</span>: Coordinate, 
 	<span class="syntax-all syntax-entity">wp</span>: Coordinate, 
 	<span class="syntax-all syntax-entity">radius</span>: <span class="syntax-all syntax-constant">Double</span>
 ) <span class="syntax-all syntax-keyword">-&gt;</span> <span class="syntax-all syntax-constant">Bool</span> {
 	<span class="syntax-all syntax-comment">// Die Entfernung zwischen der Position und dem 
 </span>	<span class="syntax-all syntax-comment">// Wegpunkt
-</span>	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">distance</span>(<span class="syntax-all syntax-constant">to</span>: wp)
+</span>	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">entfernung</span>(<span class="syntax-all syntax-constant">zu</span>: wp)
 
 	<span class="syntax-all syntax-comment">// Prüfen pb die Entfernung zum Wegpunkt kleiner ist
 </span>	<span class="syntax-all syntax-comment">// als der Detektionsradius
 </span>	<span class="syntax-all syntax-keyword">return</span> entfernung <span class="syntax-all syntax-keyword">&lt;</span> radius
 }</code></pre>
 
-<p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
+<p>Da vielleicht aufgrund von Ungenauigkeiten, bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
 
-<h3>5.2 Entfernung zweier Koordinaten</h3>
+<h3>5.2 Orthodrome berechnen</h3>
 
-<p>Um automatisch den nächsten Wegpunkt auszuwählen muss die Entfernung zum nächsten Wegpunkt bestimmt werden. Bei Koordinaten handelt es sich um Positionen auf einer Kugeloberfläche. Gehen wir davon aus, dass die Erde eine glatte Kugel ist so lässt sich die Erde mit der Funktion $x^2+y^2+z^2=(6378.13 \text{km})^2$ darstellen. </p>
+<p>Um automatisch den nächsten Wegpunkt auszuwählen muss die Entfernung zum nächsten Wegpunkt bestimmt werden. Gehen wir davon aus, dass die Erde eine perfekt runde Kugel ist dann können wir mit dem Erddurchmesser $\text{r}$ von $6378.13\text{km}$ (<a href="[https://www.wolframalpha.com/input/?i=earthradius]">WolframAlpha</a>) ausgehen.</p>
 
 <div class="block" style="position: relative;">	
-	<p class="block-title">Erdellipse statt Erdkugel?</p>
+	<p class="block-title">Erd-ellipse statt Erd-kugel?</p>
 	<div style="display: flex; position: relative; align-items: flex-start;">
-		<p style="flex: 1 1 0; flex-basis: 100%; margin-right: 8px;">Tatsächlich ist die Erde aufgrund der durch die Erdrotation auftretenden Fliehkräfte keine perfekt Kugel sondern ist zum Equator hin gestreckt. Das Bild rechts zeigt eine überzogene Darstellung dieser Ausdehnung. Tatsählich liegen die maximale Stauchung und maximale Streckung lediglich 22km auseinander. Was bezogen auf den Erdradius eine Differenz von 0,3% ausmacht und daher für unsere Berechnungen keinen all zu großen Einfluss haben sollte.
-	<br>
+		<p style="margin: 0; flex: 1 1 0; flex-basis: 100%; margin-right: 8px;">Tatsächlich ist die Erde aufgrund der durch die Erdrotation auftretenden Fliehkräfte keine perfekt Kugel sondern ist zum Equator hin gestreckt. Das Bild rechts zeigt eine überzogene Darstellung dieser Ausdehnung. Zwischen der maximalen Stauchung und maximalen Streckung besteht ein Höhenunterschied von $22\text{km}$. Bezogen auf den Erdradius ist dies eine Differenz von $0.3\%$ und sollte für unsere Berechnungen keinen all zu großen Einfluss haben.
+	<br><br>
 <a href="https://gis.stackexchange.com/a/25580">StackExchange (Geographical Information Systems)</a>
 </p>
 <img style="flex: 1 1 0; flex-basis: 50%; width: 0; overflow: hidden; border-radius: 4px;" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/OblateSpheroid.PNG">	
 </div>
 </div>
-<p>Die $6378.13km$ (<a href="[https://www.wolframalpha.com/input/?i=earthradius]">WolframAlpha</a>) entsprechen dabei der Strecke vom Erdmittelpunkt bis hin zum Erdmantel, also dem Radius r der Erde.</p>
+<figure><img src="Orthodrome.svg" alt="Orthodrome zwischen zwei Koordinaten "/><figcaption>Orthodrome zwischen zwei Koordinaten </figcaption></figure>
 
-<figure><img src="kugel.svg" alt="Radius r der Erdkugel"/><figcaption>Radius r der Erdkugel</figcaption></figure>
+<p><strong>Berechnung:</strong></p>
 
-<p>Zur Entfernungsberechnung müssen die geographischen <em>zwei dimensionalen</em> Koordinaten (lat, lng) in <em>drei dimensionale</em> ellipsoidische Koordinaten (x, y, z) umgewandelt werden. Dies ergibt einen Punkt auf der Kugeloberfläche.</p>
+<p>Im folgenden habe ich die beiden Schritt, die nötig sind, um die Distanz rechnerisch zu ermitteln näher beschrieben. Wenn dies nicht interessiert kann den Teil auch überspringen.</p>
 
-<p>Um nun die Distanz zwischen den zwei sich auf der Kugel befindlichen Koordinaten zu finden.</p>
+<ol>
+	<li>Zu beginn muss der <em>Zentriwinkel</em> $\zeta$ (Eine Strecke ausgedrückt als Winkel) berechnet werden. Die Formel dafür habe ich von der <a href="https://www.wikiwand.com/de/Orthodrome">Orthodrome Wikipedia</a> Seite. In der Formel werden die geographische Länge $\lambda$ (longitude) und die geographische Breite $\phi$ (latitude) der beiden Koordinaten $\text{A}$ und $\text{B}$ benötigt.
 
-<p>(Berechnung) <sup><a id="ffn4" href="#fn4" class="footnote">4</a></sup></p>
+		<br><br>
+		<p class="center">
+			$\zeta := \arccos \left( \sin \left( \phi_A \right) \cdot \sin \left( \phi_B \right) + \cos \left( \phi_A \right) \cdot \cos \left( \phi_B \right) \cdot \cos \left( \lambda_B - \lambda_A \right) \right)$
+		</p>
+		<br></li>
+	<li>Für die tatsächliche Distanz in $\text{km}$ muss nun noch das Ergebnis mit dem Erdradius $\text{r}$ multipliziert werden.
+
+		<br><br>
+		<p class="center">
+		$
+		l_{\text{AB}}\left(\frac{\zeta}{rad}\right):=\zeta \cdot 6378.13\text{km}
+		$ 
+		<span style="margin: 0 12px;">oder</span> 
+		$
+		l_{\text{AB}}\left(\frac{\zeta}{°}\right):=\zeta \cdot \frac{180°}{\pi} \cdot 6378.13\text{km}
+		$
+		</p></li>
+</ol>
 
 <h3>5.3 Magnetometer Kalibrierung</h3>
 
-<p>Die Kalibrierung, des Magnetfeldsensors dient dazu sämtlich Störgrößen zu ermitteln und schlussendlich aus den Messdaten herauszufiltern. <br/>Welche Störgrößen es zu beachten gibt hatte ich bereits im Teil „<a href="#magnetischeStörungen">Magnetische Störungen</a>” näher erläutert.</p>
+<p>Die Kalibrierung, des Magnetfeldsensors dient dazu Störgrößen zu ermitteln und schlussendlich aus den Messdaten herauszufiltern. <br/>Welche Störgrößen es zu beachten gibt habe ich bereits im Teil <a href="#magnetischeStörungen">Magnetische Störungen</a> näher erläutert.</p>
 
-<p><strong>Hard-Ironing</strong></p>
+<p><strong>Hard-Ironing</strong> verursacht eine Verschiebung des Mittelpunktes, der Messdaten.</p>
 
-<p>Sorgt für eine Verschiebung des Zentrums der Messdaten.</p>
-
-<p><strong>Soft-Ironing</strong></p>
-
-<p>Sorgt für eine Streckung bzw. Stauchung der Messdaten.</p>
+<p><strong>Soft-Ironing</strong> verursacht eine Streckung bzw. Stauchung, der Messdaten.</p>
 
 <p></p>
 
-<p>Für die Kalibrierung habe ich ein entsprechendes Python Programm geschrieben, dass mir sowohl die Ausgleichswert für das später auf den Mikrocontroller laufende Programm ausrechnet als auch visuell die Abweichung der Messdaten in einem Koordinatensystem darstellt. </p>
+<p>Für die Kalibrierung habe ich eine eigenständige App entwickelt, welche die Sensordaten des Navitron per WebSocket Verbindung bekommt.</p>
 
+<p>Zum Kalibrieren muss nun der Sensor in möglich alle Richtungen bewegt werden, so dass auf dem angezeigten Streungsdiagramm drei Kugeln entstehen. Sind die Kugeln verschoben oder gestreckt so handelt es sich um die eben erwähnten Störfaktoren. Da die Achsen des Diagramms nicht einhundert prozentig gleich skaliert sind kann es zu einer Streckung / Stauchung der Grafik kommen, was sich allerdings nicht auf die Messdaten auswirkt.</p>
+
+<p>Nachdem genug Daten gesammelt sind kann die Verbindung unterbrochen werden und mit einem Klick auf <em>Calibrate</em> die Ausgleichswerte berechnet werden.</p>
+
+<p>Hier ein kurzes Video des Prozesses:</p>
+
+<iframe width="600" height="400" src="https://www.youtube.com/embed/kXFgftjcBmE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 <p></p>
 
 <p></p>
 
-<h3>5.4 Magnetometer Kursbestimmung</h3>
+<h3>5.4 Kursbestimmung</h3>
 
-<h3>5.3 Laufender Betrieb</h3>
+<h3>5.5 Laufender Betrieb</h3>
 
 <p>Um die Inklination des Magnetfeldes zu kompensieren und die dreidimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
 
@@ -255,7 +306,7 @@
 
 <p>Das PCB habe ich zu 100% selber erstellt und ist bis auf einen Entkopplungskodensator hoffentlich funktionsfähig. </p>
 
-<figure><img src="IMG_0579.jpg" alt="Überprüfung jedes Pins des PCB anhand der Schemtischen Schaltung"/><figcaption>Überprüfung jedes Pins des PCB anhand der Schemtischen Schaltung</figcaption></figure>
+<figure><img src="IMG_0579.jpg" alt="Überprüfung jedes Pins und jeder Verbindung auf dem PCB anhand der Schemtischen Schaltung"/><figcaption>Überprüfung jedes Pins und jeder Verbindung auf dem PCB anhand der Schemtischen Schaltung</figcaption></figure>
 
 <h3>6.2 Herstellung</h3>
 
@@ -267,19 +318,40 @@
 
 <p>Neben dem eigentlichen PCB habe ich zudem eine Schablone für das Auftragen der Lötpaste bestellt. Diese ist mit einem Spachtel auf das Board aufzubringen und kann dann mit einem Reflow-Ofen oder einem Heißluftföhn zum schmelzen gebracht werden. Die Komponenten sind vorher vorsichtig auf die entsprechende Stelle zu platzieren.</p>
 
-<p>Am meisten sorgen bereitet mir der IMU Sensor der mit seinen gerade einmal 3x3mm mit ganzen 24 Pins eine echte Herausforderung herausstellt. Auch der doch recht hohe Preis von 7,13$\frac{\text{€}}{\text{Stück}}$ lässt wenig Fehlerspielraum zu. </p>
+<figure><img src="ICM-20948.jpg" alt="ICM-20948 neben einem Lineal und ein paar Staub-Flusen"/><figcaption>ICM-20948 neben einem Lineal und ein paar Staub-Flusen</figcaption></figure>
 
-<figure><img src="IMG_0578.jpg" alt="ICM-20948 neben einem Lineal und ein paar Staub-Flusen"/><figcaption>ICM-20948 neben einem Lineal und ein paar Staub-Flusen</figcaption></figure>
+<p>Am meisten sorgen bereitete mir der IMU der mit seinen gerade einmal 3x3mm mit ganzen 24 Pins eine echte Herausforderung darstellt. Auch der doch recht hohe Preis von 7,13$\frac{\text{€}}{\text{Stück}}$ (Preis bei <a href="https://www.digikey.de/product-detail/de/tdk-invensense/ICM-20948/1428-1123-1-ND/7062698">DigiKey</a>) lässt wenig Fehlerspielraum zu. </p>
 
-<h3>6.4 Verbesserung</h3>
+<h3>6.4 Erster Prototype</h3>
 
-<p>Eine eventuelle Nachfolger Version des Gerätes sollte folgendes beinhalten:</p>
+<figure><img src="PCB-v0-1.jpg"/></figure>
+
+<p>Zu meinem erstaunen hat bei der Inbetriebnahme meines ersten Prototypen FAST alles funktioniert. Die USB to Serial Verbindung hat funktioniert. Die LEDs haben bis auf eine defekte LED funktioniert und auch der Mikrocontroller funktionierte. </p>
+
+<p>Nachfolgend die erste Inbetriebnahme mit einem Demo:</p>
+
+<iframe width="600" height="400" src="https://www.youtube.com/embed/llpzlHtFwZQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<p>Einziges Problem war wie bereits befürchtet, der IMU. Trotzdem meine Lötverbindungen auch eher zu wünschen übrig ließen gehe ich davon aus, dass es schlussendlich nicht meine Lötverbindungen war die zum Nicht-Antworten des Chips führte sondern meine offenen Verbindungen, für den Interrupt- und den FSYNC-Pin, unter dem Chip. Mir war von dem Datenblatt nicht bewusst, dass unter dem Chip eine kleine Metallplatte für das abführen von Hitze angebracht ist, welche sehr wahrscheinlich INT und FSYNC kurzgeschlossen hat.</p>
+
+<figure><img src="Spannungswandler.jpg" alt="Überprüfung des I²C Spannungswandlers. Oben: 1,8V SCL / Unten: 3,3V SCL"/><figcaption>Überprüfung des I²C Spannungswandlers. Oben: 1,8V SCL / Unten: 3,3V SCL</figcaption></figure>
+
+<p>Eine verbesserte Version ist bereits bestellt dauert aber höchstwahrscheinlich zu lange als das sie vor der Abgabefrist hier eintrifft. Da ich mir bereits vorher gedacht habe, dass der IMU eventuell nicht auf Anhieb funktioniert, habe ich mir glücklicherweise eine Rücksicherung eingebaut, die es mir ermöglicht mein funktionierendes Breakoutboard über ein 4 adriges Kabel auf der Rückseite mit einem Stecker auf der Rückseite des PCBs zu verbinden. Bei Sparkfun wird diese Verbindung <a href="https://www.sparkfun.com/qwiic">Qwiic</a> gennant.</p>
+
+<figure><img src="Qwiic.jpg" alt="Qwiic (I²C) Stecker"/><figcaption>Qwiic (I²C) Stecker</figcaption></figure>
+
+<figure><img src="IMG_0756.jpg" alt="Backup-Lösung mit ICM-20948 Breakout"/><figcaption>Backup-Lösung mit ICM-20948 Breakout</figcaption></figure>
+
+<h3>6.5 Verbesserung</h3>
+
+<p>Hier eine Auflistung einiger Sachen die ich für die nächste Version oder beim designen eines anderen Projektes besser machen möchte.</p>
 
 <ul>
-	<li>Das Logo, welches ich vergessen habe auf das PCB zu packen.</li>
-	<li>Aus Zeitgründen habe ich es Bissher nicht geschafft ein geeignetes Case zu entwerfen. Dieses sollte wenn möglich Wasserresistent sein um das Gerät vor Spritzwasser und regen zu schützen.</li>
+	<li>Mein Logo auf das Board drucken lassen.</li>
+	<li>Die Beschriftungen des PCBs einheitlich machen und darauf achten, dass jedes Teil beschriftet ist.</li>
 	<li>Kleine Komponenten mit einem per Pick and Place Service aufbringen lassen. Dafür bietet JLCPCB einen entsprechenden Service an. Eventuell müssen andere Komponenten verwendet werden.</li>
-	<li>Kalibrierungsprogramm in finales Programm integrieren</li>
+	<li>Alternative Bauteile heraussuchen und Funktionen vergleichen.</li>
+	<li>Mehr mit dem Datenblatt arbeiten.</li>
+	<li>Schauen, dass Bauteile RoHS-konform sind.</li>
 </ul>
 
 <hr />
@@ -288,17 +360,16 @@
 
 <p>Neben den verwendeten Bauteilen habe ich auch den Grund für die Verwendung sowie einige zusätzliche Ressourcen angegeben. Die Bauteile habe ich alle bei Digi-Key bestellt.</p>
 
-<ul>
-	<li>Mikrocontroller: <a href="https://www.espressif.com/en/products/socs/esp32/overview">ESP32-WROOM-32U</a> (<a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf">ESP32 Datasheet</a>, <a href="">esp32.net</a>)
-
-		<ul>
-			<li>Ich habe mich für diesen Mikrocontroller entschieden da er bereits mit einem eingebauten Bluetooth Modul daherkommt.</li>
-		</ul></li>
-	<li>Akku: 3,7V Lithium-Polymer-Akku</li>
-	<li>IMU: <a href="https://invensense.tdk.com/products/motion-tracking/9-axis/icm-20948/">ICM-20948</a></li>
-	<li>LED Ring: <a href="https://www.adafruit.com/product/1463">Adafruit 16 LED NeoPixel Ring</a></li>
-</ul>
-
+<br>
+<table style"position: relative; max-width: 100%;">
+  <thead>
+    <th>Bauteil</th>
+    <th>Anzahl</th>
+    <th>Beschreibung</th>
+    <th>Preis</th>
+  </thead>
+  <tbody id="partsTableBody"></tbody>
+</table>
 <h3>7.1 Kosten</h3>
 
 <p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe lagen meine Anschaffungskosten bei etwa 150€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegt meine Ausgabe über den 139€ für den SmartHalo habe aber durch das entwerfen einiges an Erfahrung gewonnen und kann nun auch für meine Familie einen solchen Fahrradcomputer erstellen.</p>
@@ -321,6 +392,12 @@
 <p>Die Bauteile Bibliotheken habe ich mir auf <a href="https://www.snapeda.com/">SnapEDA.com</a> heruntergeladen.</p>
 </blockquote>
 
+<style>
+.center {
+	text-align: center;
+}
+</style>
+
 <script>
 /* Preferences */
 
@@ -339,6 +416,7 @@ var headers = []
 window.onload = function() {
 	loadLastUpdatedBitbucket('kuhltime', '')
   	generateTableOfContent()
+	generatePartsTable()
 }
 
 
@@ -368,6 +446,55 @@ function loadLastUpdatedBitbucket(user, repo) {
 			console.error(error)
 			console.error('The is unavailable or marked as private')
 		})
+}
+
+Number.prototype.toFixedNumber = function(digits, base){
+  var pow = Math.pow(base||10, digits);
+  return Math.round(this*pow) / pow;
+}
+
+function generatePartsTable() {
+	let url = "https://api.jsonbin.io/b/5f2832cfdddf413f95bbbf3e"
+
+	fetch(url)
+		.then(res => res.json())
+  		.then(data => {
+		  	if (data == undefined || data.length == 0) {
+		    	return
+		    }
+		    
+		    let $output = document.getElementById('partsTableBody')
+		    
+		    console.log(data)
+		    
+		    let items = ['MPN', 'Qty', 'Description', 'Batch Total [Lowest Price (Overall)]']
+
+			var totalPrice = 0
+		  
+		  	data.forEach(e => {
+		    	let $row = document.createElement('tr')
+		    
+		    	items.forEach(item => {
+		      		let $cell = document.createElement('td')
+					
+                    var value = e[item]
+        
+			        if (typeof value == 'number') {
+			        	value = value.toFixedNumber(2, 10)
+			        }
+
+                    if (item == 'Batch Total [Lowest Price (Overall)]') {
+						value = `${value}€`
+ 					}
+			        
+			        $cell.innerHTML = value
+		        
+		        	$row.appendChild($cell)
+		     	})
+		      
+		     	$output.appendChild($row)
+    		})
+  		})
 }
 
 function generateTableOfContent() {
@@ -481,6 +608,10 @@ function getHeaders(min, max) {
   }
 
   return document.querySelectorAll(tagNames)
+}
+
+function calculateDistance(lat_a, lat_b, lng_a, lng_b) {
+	
 }
 
 // https://stackoverflow.com/a/2970588/4179020
