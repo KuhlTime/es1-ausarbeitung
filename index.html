@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+	</head>
+<body>
+<figure><img src="Artboard.png"/></figure>
+
+<h1>Navitron - Ein Portabler Navigationskompass <br/><br/>Von der Planung bis zur Produktion</h1>
+
+<h3>Ausarbeitung für Embedded Systems 1</h3>
+
+<figure><img src="Profile.png"/></figure>
+
+<ul>
+	<li>Name: <strong>André Kuhlmann</strong></li>
+	<li>Matrikelnummer: <strong>779690</strong></li>
+	<li>Fachbereich: <strong>Elektro- und Informationstechnik <br/>Hochschule Düsseldorf</strong></li>
+	<li>Erstellt: <strong>17. Juni 2020</strong></li>
+	<li>Letztes Update: <b><span id="lastUpdated">Lädt ...</span></b> </li>
+</ul>
+
+<h2>Inhaltsverzeichnis</h2>
+
+<div id="toc"></div>
+<hr />
+
+<h2>1. Einleitung</h2>
+
+<p>Begonnen hat alles mit einer Mountainbike-Tour, mit meinem Vater. Die Tour die wir fahren wollten hatten wir zuvor in einer Outdoor-App auf unser Handy heruntergeladen doch trotz des elektronischen Helfers in der Tasche mussten wir alle paar Meter nach der richtigen Abzweigung ausschau halten. <br/>Da mir und meinem Vater das ständige rausholen des Handys irgendwann auf die Nerven ging machte ich mich im Internet nach einer Alternative schlau.<br/>Ich stieß damals auf einen Kickstarter Eintrag namens „<a href="https://www.kickstarter.com/projects/smarthalo/smarthalo-turn-your-bike-into-a-smart-bike?lang=de" title="SmartHalo"><em>SmartHalo</em></a>”.</p>
+
+<p>Für mein Projekt in dem Modul Embedded Systems 1 werde ich nun versuchen eben jenes Produkt für mich und meinen Vater nachzubauen. Die Bauteile, wie den LED Ring oder den IMU habe ich glücklicherweise schon vorher, als Breakoutboard (Platine zum einfache Entwickeln eines Prototypen), gehabt und konnte diese direkt auf einem Breadboard testen. </p>
+
+<p>Ich habe das Dokument in einige Themenbereiche gegliedert, in denen ich einzeln auf einige Besonderheiten des Projektes eingehe.</p>
+
+<p>Da die Aufgabe darin bestand eine Audio- oder Videodatei aufzunehmen, nutze ich diese schriftliche Ausarbeitung als ein Skript für mein Video.</p>
+
+<h3>1.1 Showcase</h3>
+
+<p></p>
+
+<hr />
+
+<h2>2. Plannung</h2>
+
+<ul>
+	<li>Der Ring soll die Richtung anzeigen in die der Nutzer fahren soll.</li>
+	<li>Das Gerät sollte einen eingebauten Akku besitzen, der einfach wieder aufladbar ist und über eine Tour mindesten 5 Stunden halten soll.</li>
+	<li>Die Abarbeitung der Route sowie die Ermittlung der GPS-Position soll das Gerät über eine Bluetooth Verbindung von dem Smartphone erhalten.</li>
+</ul>
+
+<figure><img src="Artboard-1.png" alt="Aufgabenverteilung und Funktionsbausteine der beiden Geräte"/><figcaption>Aufgabenverteilung und Funktionsbausteine der beiden Geräte</figcaption></figure>
+
+<figure><img src="IMG_0576.jpg" alt="Bestimmung der Größe des PCBs"/><figcaption>Bestimmung der Größe des PCBs</figcaption></figure>
+
+<hr />
+
+<h2>3. Umsetzung</h2>
+
+<h3>3.1 Das Gerät</h3>
+
+<p>Die Schaltung für das Gerät, welches schlussendlich am Lenker meines Fahrrads montiert werden soll habe ich in Eagle entworfen.</p>
+
+<p>Im nachfolgenden werde ich näher auf die Wahl meiner verwendeten Bauteile eingehen.</p>
+
+<h4>3.1.1 Mikrocontroller</h4>
+
+<figure><img src="3320-06.jpg"/></figure>
+
+<p>Als Herz meiner Schaltung habe ich mich für einen <strong>ESP32</strong> der Firma Espressif entschieden, da ich bereits häufiger mit diesem Mikrocontroller gearbeitet habe und er bereits über die nötige Bluetooth Schnittstelle verfügt.<br/>Anders als viele Atmel Mikrocontroller läuft dieser nicht auf den üblichen $5$ Volt sondern $3.3$ Volt. Für die Aufgabe ist dieser Mikrocontroller sehr wahrscheinlich überdimensioniert und könnte wahrscheinlich durch einen sparsameren Mikrocontroller ersetz werden. Zeit war hier ein entschiedener Faktor.</p>
+
+<h4>3.1.2 LED-Ring</h4>
+
+<figure><img src="2856-01.gif" alt="https://www.adafruit.com/product/2856"/><figcaption>https://www.adafruit.com/product/2856</figcaption></figure>
+
+<p>Für den LED-Ring verwendet ich <strong>WS2812B</strong>.<br/>Diese von der Firma Worldsemi hergestellten RGB-LEDs sind einzeln ansteuerbare LEDs die über einen Datenpin ihre gewünschte Farbe erhalten. Jede weitere LED kann über den Datenausgang in Reihe verschaltet werden.<br/>Für die LEDs wird eine Spannung von $3.5\text{V}\ bis\ 5.3\text{V}$ benötigt, welche ohne einen Spannungsbooster für die Batterie möglich seien sollte. Mit geringerer Spannung kommt es zu deutlich erkennbaren Farbverfälschung. <br/>Das ansteuern mit den $3.3\text{V} $ des ESP Ausgangs hat bei meinen Tests ohne Probleme funktioniert. Falls es hier allerdings zu Problemen mit dem ansteuern der LEDs kommt müsste eventuell ein passender Level Shifter verwendet werden.</p>
+
+<h4>3.1.3 USB to Serial Converter</h4>
+
+<p>Um ein schnelles umprogrammieren des Mikrocontrollers zu ermöglichen habe ich mich für die Verwendung eines USB to Serial Converter entschieden. Damit lassen sich Programmupdates ohne großen Aufwand direkt auf den Chip des Navitron flashen. Für das Design habe ich auf Open Source Schaltungen der Firma <a href="https://www.sparkfun.com/products/15006?utm_campaign=LoRa%20Gateway%20ESP32&amp;utm_source=2nd%20Featured%20Content">Sparkfun</a> zurückgegriffen. </p>
+
+<h4>3.1.4 Laderegler</h4>
+
+<p>Da das Gerät später mal am Lenker montiert werden soll ist eine Kabelgebundenen Stromversorgung keine Lösung. Wie bei den meisten Geräten auf dem Markt verwende ich einen Lithium-Polymer Akku der über eine Steckverbindung mit dem Gerät verbunden werden kann. Um nicht jedesmal das Gehäuse öffnen zu müssen um den Akku zu laden verwende ich den <a href="http://ww1.microchip.com/downloads/en/DeviceDoc/MCP73831-Family-Data-Sheet-DS20001984H.pdf">MCP73831</a> Laderegler der Firma Microchip.</p>
+
+<figure><img src="Typical-Application.png" alt="Anwendungsbeispiel aus dem Datenblatt"/><figcaption>Anwendungsbeispiel aus dem Datenblatt</figcaption></figure>
+
+<p>Mit einem Widerstand $\text{R}_{\text{PROG}}\ [\text{k}\Omega]$ lässt sich der maximale Ladestrom für die Batterie einstellen.</p>
+
+<br>
+$\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}} $
+<br><br>
+<div class="block" style="position: relative;">	
+	<p class="block-title">Funktionsweise eines Ladereglers</p>
+	<div style="display: flex; position: relative; align-items: flex-start;">
+		<p style="flex: 1 1 0; flex-basis: 50%; margin-right: 12px;">Ein Laderegler, reguliert Strom <i>I</i> und Spannung <i>V</i> so, dass der LiPo-Akku möglichst schonend geladen wird. Man sieht in der Grafik rechts die Ladekurve mit einen Ladestrom $\text{I}_{\text{REG}}=100\text{mA}$. Erreicht der Akku die gewünschten $4.2\text{V}$ regelt der Laderegler den Strom immer weiter herunter. Das drosseln des Ladestrom geschieht bei etwa 80% Batterieladung.
+	<br>
+</p>
+<div style="flex: 1 1 0; flex-basis: 50%; width: 100%; height: 100%; padding-right: 20px;">
+	<img style="width: 100%; overflow: hidden; border-radius: 4px; border-radius: 3px; border: 10px solid #fff;" src="https://i.postimg.cc/7ZrpX1HX/Bildschirmfoto-2020-07-31-um-11-18-17.png">
+<p style="text-align: center; width: 100%; margin-top: -2px; margin-left: 10px; color: #888; font-size: 12px;">Diagramm aus dem Datenblatt des MCP73831</p>
+</div>
+</div>
+
+</div>
+<p>Ich habe für meine Schaltung einen $\text{R}_{\text{PROG}} = 2\text{k}\Omega$ gewählt. Was meinen Akku mit einem maximalen Ladestrom von  $\text{I}_{\text{REG}}=500\text{mA}$ versorgt.</p>
+
+<h4>3.1.5 Spannungswandler</h4>
+
+<p>Da der Mikrocontroller auf $3.3\text{V}$ und die IMU auf $1.8\text{V}$ laufen habe ich zwei Lineare Spannungswandler mit ausreichend Output Strom verwendet. Mehr Details im Datenblatt des <a href="https://www.diodes.com/assets/Datasheets/AP2112.pdf">AP2112</a>.</p>
+
+<h3>3.2 Die App</h3>
+
+<p>Neben dem eigentlichen Gerät habe ich mich dafür entschieden die Positionsbestimmung, sowie die Einpflegung und Verarbeitung der Route, über ein verbundenes Smartphone zu realisieren. Schlussendlich wird der errechnete Kurs dann über Bluetooth an das Gerät übertragen. Das Gerät soll dann aus gegebenen Magnetfelddaten und dem berechneten Kurs vom Smartphone den gewünschten Kurs auf den LEDs ausgeben.</p>
+
+<hr />
+
+<h2>4. Beschreibung</h2>
+
+<p>In diesem Teil gehe ich etwas tiefer auf einige Konzepte und Bauteile ein, die für die Umsetzung dieses Projektes von Nöten sind.</p>
+
+<h3>4.1 Inertiale Messeinheit (IMU)</h3>
+
+<p>Als <em>Inertiale Messeinheit</em> (engl.: „<em>Inertial Measurment Unit</em>”, kurz: <em>IMU</em>) beschreibt man einen Sensor, mit welchem die Lage und Bewegung im Physikalischen Raum festgestellt werden kann. Ein solcher Sensor beinhaltet überlicherweise einen <em>Beschleunigungssensor</em> und einen <em>Drehratensensor</em>. Für meine Anwendung ist neben diesen beiden Sensoren auch ein <em>Magnetfeldsensor</em> vorhanden, welches — wenn den richtig kalibriert — das magnetische Feld der Erde erfassen soll.</p>
+
+<p>Man spricht von einem Sensor mit 9 Freiheitsgeraden (9 DOF — Dimension of Freedom)</p>
+
+<h3>4.2 Magnetische Störungen</h3>
+
+<p>Um das Erdmagnetfeld richtig erfassen zu können, müssen zu beginn sämtlich magnetischen Störgrößen erfasst und herausgerechnet werden. Dieser Prozess ist als „Kalibrieren des Sensors” bekannt und muss auch bei einem Smartphone vor der Verwendung des Kompass durchgeführt werden. <sup><a id="ffn1" href="#fn1" class="footnote">1</a></sup> </p>
+
+<p>Es gibt zwei Art von auftretenden Störgrößen: </p>
+
+<p><strong>Hard Iron Distortion</strong></p>
+
+<p><em>Hard Iron Sources</em> sind Magnetfelder die sich mit dem Sensor bewegen und so für eine konstant gleiche Verfälschung der Daten sorgen. Mögliche Gründe dafür sind benachbarte, ferromagnetische Bauteile auf dem PCB oder im Gehäuse.</p>
+
+<p><strong>Soft Iron Distortion</strong></p>
+
+<p></p>
+
+<p><br/></p>
+
+<p><sup><a id="ffn2" href="#fn2" class="footnote">2</a></sup></p>
+
+<h3>4.3 Das Erdmagnetfeld</h3>
+
+<p>Nachdem wir die magnetischen Störgrößen herausgefiltert haben werden wir schnell feststellen, dass die gemessenen Daten unseres Magnetometers nicht in Richtung geographischen Norden zeigen werden.</p>
+
+<div class="block" style="position: relative;">	
+	<p class="block-title">Unterschied zwischen Geographischem und Magnetischem Nordpol</p>
+	<div style="display: flex; position: relative; align-items: flex-start;">
+		<p style="flex: 1 1 0; flex-basis: 100%; margin-right: 8px;">Wohingegen der Geogeraphische Nordpol immer an der selben stelle zu finden ist, verschiebt sich der Magnetische Nordpol jedes Jahr um ein paar Kilometer.
+		</p>
+
+		<img style="flex: 1 1 0; flex-basis: 100%; width: 0; overflow: hidden; border-radius: 4px;" src="https://www.dw.com/image/47043001_7.png">
+	</div>
+</div> 
+<p><br/>Der Grund für die Abweichung zwischen dem magnetischen und geographischen Norden ist, dass sich unser Schutzschild (das Erdmagnetfeld) permanent verändert und verschiebt. <br/>Zu allem Übel verlaufen die Erd-Magnetfeldlinien auf unserem Breitengrad nicht Horizontal zur Erdoberfläche sondern versinken in einem bestimmten Winkel in die Erde. Dieser Winkel wird die magnetische <em>Inklination</em> gennant. Auf Nachfolgender Karte, von den <em>National Centers for Enviormental Information</em> (kurz: <em>NOAA</em>) lässt sich dieser Wert für jeden Ort der Erde ablesen. <sup><a id="ffn3" href="#fn3" class="footnote">3</a></sup></p>
+
+<figure><img src="WMM2020_I_BoZ_MILL.pdf.jpg" alt="Karte für die Ende 2019 gemessene magnetische Inklination"/><figcaption>Karte für die Ende 2019 gemessene magnetische Inklination</figcaption></figure>
+
+<p>Als <em>Deklination</em> wird der Winkel zwischen magnetischem und geographischen Norden bezeichnet. Es ist also die Abweichung zwischen den beiden.</p>
+
+<p>Bei einer Deklination von bspw. 10° an unserer Position hätte das zur folge, dass wenn wir einen Kompass betrachten die Nadel leicht nach rechts zeigen müsste, damit wir in Richtung Norden schauen. </p>
+
+<p>Da unser Gerät natürlich in Richtung des geographischen Nordens ausgerichtet seien soll müssen wir diese Abweichung später mit in unsere Berechnung mit einfließen lassen.</p>
+
+<figure><img src="WMM2020_D_BoZ_MILL.pdf.jpg" alt="Karte für die Ende 2019 gemessene magnetische Deklanation"/><figcaption>Karte für die Ende 2019 gemessene magnetische Deklanation</figcaption></figure>
+
+<p>Die Inklination und Deklination kann im folgenden für die angegebenen Koordinaten berechnet werden. Die Daten kommen von <a href="https://amentum.space/">Amentum Aerospace</a> (<a href="https://globalmagnet.amentum.space/wmm/ui/#!/Click32to32view32documentation32for32API32endpoints/app_api_wmm_endpoints_WMM_magnetic_field">API</a>). </p>
+
+<input style="margin-top: 20px" class="input" type="decimal" placeholder="Latitude" id="lat" required>
+<input class="input" type="decimal" placeholder="Longitude" id="lng" required>
+<button id="magBtn" onclick="loadMagData()">Laden</button>
+
+<p style="text-align: center; background-color: #eee; padding: 4px; border-radius: 4px; display: none;" id="magData">Die Deklination an diesem Ort beträgt: <b>2,4°</b></p>
+<p><p style="font-size: 80%; color: #555; text-align: center">Das Ergebnis wird mit einem "." als Komma dargestellt.</p></p>
+
+<h3>4.4 GPS </h3>
+
+<p>Die Ermittlung der aktuellen GPS-Koordinaten, des Nutzers erfolgt über die zum Gerät zugehörige Smartphone App. Diese Architektur ist zwar nicht gerade Nutzerfreundlich aber schneller für mich zu realisieren, da das Smartphone bereits mit einigen Bibliotheken für die Verwendung des integrierten GPS Moduls kommt.</p>
+
+<hr />
+
+<h2>5. Berechnungen</h2>
+
+<h3>5.1 Route</h3>
+
+<p>Die Route liegt im Handy als Liste von Wegpunkten, als eine <em>GPX Datei</em>, vor. Jeder Wegpunkt besitzt eine Koordinate, welche nacheinander die gewünschte Tour ergibt.</p>
+
+<p>Kommt der Nutzer einem Wegpunkt nahe so soll automatisch der nächste Wegpunkt ausgewählt werden. </p>
+
+<p>In dem nachfolgenden Konzept wird die aktuelle Position des Nutzers mit dem Blauen Punkt dargestellt. Der Transparente Kreis um den Blauen Punkt ist der Detektionsradius in welchem ein Wegpunkt erkannt und der nächste Wegpunkt ausgewählt wird.</p>
+
+<figure><img src="Artboard-2.png" alt="Konzept zur Abarbeitung einer Route"/><figcaption>Konzept zur Abarbeitung einer Route</figcaption></figure>
+
+<p>Eine mögliche Überprüfung, ob sich die Person in Reichweite eines Wegpunktes befindet könnte wie folgt in <strong>Swift</strong> umgesetzt werden. Es handelt sich hier um Pseudocode und funktioniert so noch nicht direkt in der App.</p>
+
+<pre><code class="code-highlighted code-swift"><span class="syntax-all syntax-comment">/**
+</span><span class="syntax-all syntax-comment"> Die Funktion prüft ob sich der Wegpunkt (wp) im Radius 
+</span><span class="syntax-all syntax-comment"> (radius) der aktuellen Position des Nutzers (pos) 
+</span><span class="syntax-all syntax-comment"> befindet und gibt das Ergebnis als Boolean zurück.
+</span><span class="syntax-all syntax-comment"> */</span>
+
+<span class="syntax-all syntax-keyword">func</span> <span class="syntax-all syntax-entity">überprüfenObAmWegpunkt</span>(
+	<span class="syntax-all syntax-entity">pos</span>: Coordinate, 
+	<span class="syntax-all syntax-entity">wp</span>: Coordinate, 
+	<span class="syntax-all syntax-entity">radius</span>: <span class="syntax-all syntax-constant">Double</span>
+) <span class="syntax-all syntax-keyword">-&gt;</span> <span class="syntax-all syntax-constant">Bool</span> {
+	<span class="syntax-all syntax-comment">// Die Entfernung zwischen der Position und dem 
+</span>	<span class="syntax-all syntax-comment">// Wegpunkt
+</span>	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">entfernung</span>(<span class="syntax-all syntax-constant">zu</span>: wp)
+
+	<span class="syntax-all syntax-comment">// Prüfen pb die Entfernung zum Wegpunkt kleiner ist
+</span>	<span class="syntax-all syntax-comment">// als der Detektionsradius
+</span>	<span class="syntax-all syntax-keyword">return</span> entfernung <span class="syntax-all syntax-keyword">&lt;</span> radius
+}</code></pre>
+
+<p>Da vielleicht aufgrund von Ungenauigkeiten, bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
+
+<h3>5.2 Orthodrome berechnen</h3>
+
+<p>Um automatisch den nächsten Wegpunkt auszuwählen muss die Entfernung zum nächsten Wegpunkt bestimmt werden. Gehen wir davon aus, dass die Erde eine perfekt runde Kugel ist dann können wir mit dem Erddurchmesser $\text{r}$ von $6378.13\text{km}$ (<a href="[https://www.wolframalpha.com/input/?i=earthradius]">WolframAlpha</a>) ausgehen.</p>
+
+<div class="block" style="position: relative;">	
+	<p class="block-title">Erd-ellipse statt Erd-kugel?</p>
+	<div style="display: flex; position: relative; align-items: flex-start;">
+		<p style="margin: 0; flex: 1 1 0; flex-basis: 100%; margin-right: 8px;">Tatsächlich ist die Erde aufgrund der durch die Erdrotation auftretenden Fliehkräfte keine perfekt Kugel sondern ist zum Equator hin gestreckt. Das Bild rechts zeigt eine überzogene Darstellung dieser Ausdehnung. Zwischen der maximalen Stauchung und maximalen Streckung besteht ein Höhenunterschied von $22\text{km}$. Bezogen auf den Erdradius ist dies eine Differenz von $0.3\%$ und sollte für unsere Berechnungen keinen all zu großen Einfluss haben.
+	<br><br>
+<a href="https://gis.stackexchange.com/a/25580">StackExchange (Geographical Information Systems)</a>
+</p>
+<img style="flex: 1 1 0; flex-basis: 50%; width: 0; overflow: hidden; border-radius: 4px;" src="https://upload.wikimedia.org/wikipedia/commons/b/b5/OblateSpheroid.PNG">	
+</div>
+</div>
+<figure><img src="Orthodrome.svg" alt="Orthodrome zwischen zwei Koordinaten "/><figcaption>Orthodrome zwischen zwei Koordinaten </figcaption></figure>
+
+<p><strong>Berechnung:</strong></p>
+
+<p>Im folgenden habe ich die beiden Schritt, die nötig sind, um die Distanz rechnerisch zu ermitteln näher beschrieben. Wenn dies nicht interessiert kann den Teil auch überspringen.</p>
+
+<ol>
+	<li>Zu beginn muss der <em>Zentriwinkel</em> $\zeta$ (Eine Strecke ausgedrückt als Winkel) berechnet werden. Die Formel dafür habe ich von der <a href="https://www.wikiwand.com/de/Orthodrome">Orthodrome Wikipedia</a> Seite. In der Formel werden die geographische Länge $\lambda$ (longitude) und die geographische Breite $\phi$ (latitude) der beiden Koordinaten $\text{A}$ und $\text{B}$ benötigt.
+
+		<br><br>
+		<p class="center">
+			$\zeta := \arccos \left( \sin \left( \phi_A \right) \cdot \sin \left( \phi_B \right) + \cos \left( \phi_A \right) \cdot \cos \left( \phi_B \right) \cdot \cos \left( \lambda_B - \lambda_A \right) \right)$
+		</p>
+		<br></li>
+	<li>Für die tatsächliche Distanz in $\text{km}$ muss nun noch das Ergebnis mit dem Erdradius $\text{r}$ multipliziert werden.
+
+		<br><br>
+		<p class="center">
+		$
+		l_{\text{AB}}\left(\frac{\zeta}{rad}\right):=\zeta \cdot 6378.13\text{km}
+		$ 
+		<span style="margin: 0 12px;">oder</span> 
+		$
+		l_{\text{AB}}\left(\frac{\zeta}{°}\right):=\zeta \cdot \frac{180°}{\pi} \cdot 6378.13\text{km}
+		$
+		</p></li>
+</ol>
+
+<h3>5.3 Magnetometer Kalibrierung</h3>
+
+<p>Die Kalibrierung, des Magnetfeldsensors dient dazu Störgrößen zu ermitteln und schlussendlich aus den Messdaten herauszufiltern. <br/>Welche Störgrößen es zu beachten gibt habe ich bereits im Teil <a href="#magnetischeStörungen">Magnetische Störungen</a> näher erläutert.</p>
+
+<p><strong>Hard-Ironing</strong> verursacht eine Verschiebung des Mittelpunktes, der Messdaten.</p>
+
+<p><strong>Soft-Ironing</strong> verursacht eine Streckung bzw. Stauchung, der Messdaten.</p>
+
+<p></p>
+
+<p>Für die Kalibrierung habe ich eine eigenständige App entwickelt, welche die Sensordaten des Navitron per WebSocket Verbindung bekommt.</p>
+
+<p>Zum Kalibrieren muss nun der Sensor in möglich alle Richtungen bewegt werden, so dass auf dem angezeigten Streungsdiagramm drei Kugeln entstehen. Sind die Kugeln verschoben oder gestreckt so handelt es sich um die eben erwähnten Störfaktoren. Da die Achsen des Diagramms nicht einhundert prozentig gleich skaliert sind kann es zu einer Streckung / Stauchung der Grafik kommen, was sich allerdings nicht auf die Messdaten auswirkt.</p>
+
+<p>Nachdem genug Daten gesammelt sind kann die Verbindung unterbrochen werden und mit einem Klick auf <em>Calibrate</em> die Ausgleichswerte berechnet werden.</p>
+
+<p>Hier ein kurzes Video des Prozesses:</p>
+
+<iframe width="600" height="400" src="https://www.youtube.com/embed/kXFgftjcBmE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<p></p>
+
+<p></p>
+
+<h3>5.4 Kursbestimmung</h3>
+
+<h3>5.5 Laufender Betrieb</h3>
+
+<p>Um die Inklination des Magnetfeldes zu kompensieren und die dreidimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
+
+<hr />
+
+<h2>6. Schaltung</h2>
+
+<p>Wie auch im Praktikum habe ich für die Erstellung der Platine das von Autodesk kostenlos zu Verfügung stehende Programm Eagle verwendet. Mit diesem Programm habe ich mehrmals andere, kleinere Schaltungen entworfen und bin mit diesem am besten vertraut. Das Design basiert größtenteils auf Open Source zugängliche Designs der Firma <a href="https://www.sparkfun.com/">Sparkfun</a>. Einige der verwendeten Bauteile habe ich bereits vorher besessen und konnte diese auf einem Breadboard verwenden um einige Design Features im voraus zu testen.</p>
+
+<figure><img src="Navitron%20Seite%202.jpg"/> <img src="Navitron%20Seite%201.jpg"/></figure>
+
+<h3>6.1 Korrektur</h3>
+
+<p>Da ich sichergehen wollte, dass meine Schaltung auch wirklich in vollem Umfang funktioniert, habe ich auf der Freelancer Platform <a href="https://de.fiverr.com/knochi/design-your-custom-electronics?context_referrer=search_gigs&amp;source=your_recently_viewed_gigs&amp;ref_ctx_id=9039e438-964f-4fa9-b083-d1eeb5000c71&amp;pckg_id=1&amp;pos=2&amp;is_pro=false&amp;context_alg=recently_viewed&amp;context=recommendation">Fiverr</a> für ein paar Euro jemanden beauftragt meine Schematic auf Fehler zu überprüfen. Neben einem Widerstand und einem Entkopplungskondensator hat er allerdings keine Fehler feststellen können. Was genau ich an Hilfe bekommen habe können Sie sich ebenfalls in meinem Repository anschauen (damit Sie sehen, dass es mit rechten Dingen zugegangen ist).</p>
+
+<p>Das PCB habe ich zu 100% selber erstellt und ist bis auf einen Entkopplungskodensator hoffentlich funktionsfähig. </p>
+
+<figure><img src="IMG_0579.jpg" alt="Überprüfung jedes Pins und jeder Verbindung auf dem PCB anhand der Schemtischen Schaltung"/><figcaption>Überprüfung jedes Pins und jeder Verbindung auf dem PCB anhand der Schemtischen Schaltung</figcaption></figure>
+
+<h3>6.2 Herstellung</h3>
+
+<p>Bei all meinen bisher erstellten Boards habe ich auf den Chinesischen Hersteller JLCPCB zurückgegriffen. Aus Umweltgründen würde ich gerne einen Deutschen oder doch zumindest Europäischen Hersteller vorziehen konnte aber keine kostengünstige Alternative finden. Selbst mit Expresslieferung ist die Produktion in Fernost um einiges billiger. Auch aufgrund meines doch eher beschränkten Budget für diese Projekt musste ich leider die Umwelttechnischen Konsequenzen ausser acht lassen. Für eine nächste Version, welche ich ohne Zeitdruck entwickeln könnte wäre dies jedoch ein Hauptmerkmal. </p>
+
+<figure><img src="Top.png" alt="Obere Fotomaske für die Photolithografie"/><figcaption>Obere Fotomaske für die Photolithografie</figcaption></figure>
+
+<h3>6.3 Montage</h3>
+
+<p>Neben dem eigentlichen PCB habe ich zudem eine Schablone für das Auftragen der Lötpaste bestellt. Diese ist mit einem Spachtel auf das Board aufzubringen und kann dann mit einem Reflow-Ofen oder einem Heißluftföhn zum schmelzen gebracht werden. Die Komponenten sind vorher vorsichtig auf die entsprechende Stelle zu platzieren.</p>
+
+<figure><img src="ICM-20948.jpg" alt="ICM-20948 neben einem Lineal und ein paar Staub-Flusen"/><figcaption>ICM-20948 neben einem Lineal und ein paar Staub-Flusen</figcaption></figure>
+
+<p>Am meisten sorgen bereitete mir der IMU der mit seinen gerade einmal 3x3mm mit ganzen 24 Pins eine echte Herausforderung darstellt. Auch der doch recht hohe Preis von 7,13$\frac{\text{€}}{\text{Stück}}$ (Preis bei <a href="https://www.digikey.de/product-detail/de/tdk-invensense/ICM-20948/1428-1123-1-ND/7062698">DigiKey</a>) lässt wenig Fehlerspielraum zu. </p>
+
+<h3>6.4 Erster Prototype</h3>
+
+<figure><img src="PCB-v0-1.jpg"/></figure>
+
+<p>Zu meinem erstaunen hat bei der Inbetriebnahme meines ersten Prototypen FAST alles funktioniert. Die USB to Serial Verbindung hat funktioniert. Die LEDs haben bis auf eine defekte LED funktioniert und auch der Mikrocontroller funktionierte. </p>
+
+<p>Nachfolgend die erste Inbetriebnahme mit einem Demo:</p>
+
+<iframe width="600" height="400" src="https://www.youtube.com/embed/llpzlHtFwZQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<p>Einziges Problem war wie bereits befürchtet, der IMU. Trotzdem meine Lötverbindungen auch eher zu wünschen übrig ließen gehe ich davon aus, dass es schlussendlich nicht meine Lötverbindungen war die zum Nicht-Antworten des Chips führte sondern meine offenen Verbindungen, für den Interrupt- und den FSYNC-Pin, unter dem Chip. Mir war von dem Datenblatt nicht bewusst, dass unter dem Chip eine kleine Metallplatte für das abführen von Hitze angebracht ist, welche sehr wahrscheinlich INT und FSYNC kurzgeschlossen hat.</p>
+
+<figure><img src="Spannungswandler.jpg" alt="Überprüfung des I²C Spannungswandlers. Oben: 1,8V SCL / Unten: 3,3V SCL"/><figcaption>Überprüfung des I²C Spannungswandlers. Oben: 1,8V SCL / Unten: 3,3V SCL</figcaption></figure>
+
+<p>Eine verbesserte Version ist bereits bestellt dauert aber höchstwahrscheinlich zu lange als das sie vor der Abgabefrist hier eintrifft. Da ich mir bereits vorher gedacht habe, dass der IMU eventuell nicht auf Anhieb funktioniert, habe ich mir glücklicherweise eine Rücksicherung eingebaut, die es mir ermöglicht mein funktionierendes Breakoutboard über ein 4 adriges Kabel auf der Rückseite mit einem Stecker auf der Rückseite des PCBs zu verbinden. Bei Sparkfun wird diese Verbindung <a href="https://www.sparkfun.com/qwiic">Qwiic</a> gennant.</p>
+
+<figure><img src="Qwiic.jpg" alt="Qwiic (I²C) Stecker"/><figcaption>Qwiic (I²C) Stecker</figcaption></figure>
+
+<figure><img src="IMG_0756.jpg" alt="Backup-Lösung mit ICM-20948 Breakout"/><figcaption>Backup-Lösung mit ICM-20948 Breakout</figcaption></figure>
+
+<h3>6.5 Verbesserung</h3>
+
+<p>Hier eine Auflistung einiger Sachen die ich für die nächste Version oder beim designen eines anderen Projektes besser machen möchte.</p>
+
+<ul>
+	<li>Mein Logo auf das Board drucken lassen.</li>
+	<li>Die Beschriftungen des PCBs einheitlich machen und darauf achten, dass jedes Teil beschriftet ist.</li>
+	<li>Kleine Komponenten mit einem per Pick and Place Service aufbringen lassen. Dafür bietet JLCPCB einen entsprechenden Service an. Eventuell müssen andere Komponenten verwendet werden.</li>
+	<li>Alternative Bauteile heraussuchen und Funktionen vergleichen.</li>
+	<li>Mehr mit dem Datenblatt arbeiten.</li>
+	<li>Schauen, dass Bauteile RoHS-konform sind.</li>
+</ul>
+
+<hr />
+
+<h2>7. Bauteilliste</h2>
+
+<p>Neben den verwendeten Bauteilen habe ich auch den Grund für die Verwendung sowie einige zusätzliche Ressourcen angegeben. Die Bauteile habe ich alle bei Digi-Key bestellt.</p>
+
+<br>
+<table style"position: relative; max-width: 100%;">
+  <thead>
+    <th>Bauteil</th>
+    <th>Anzahl</th>
+    <th>Beschreibung</th>
+    <th>Preis</th>
+  </thead>
+  <tbody id="partsTableBody"></tbody>
+</table>
+<h3>7.1 Kosten</h3>
+
+<p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe lagen meine Anschaffungskosten bei etwa 150€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegt meine Ausgabe über den 139€ für den SmartHalo habe aber durch das entwerfen einiges an Erfahrung gewonnen und kann nun auch für meine Familie einen solchen Fahrradcomputer erstellen.</p>
+
+<hr />
+
+<h2>8. Danksagung</h2>
+
+<ul>
+	<li>Danke an <a href="https://www.sparkfun.com/">Sparkfun</a> für das ihre Open Source zugänglichen Schaltungen.</li>
+	<li>Danke an <a href="https://de.fiverr.com/knochi/design-your-custom-electronics?context_referrer=search_gigs&amp;source=your_recently_viewed_gigs&amp;ref_ctx_id=9039e438-964f-4fa9-b083-d1eeb5000c71&amp;pckg_id=1&amp;pos=2&amp;is_pro=false&amp;context_alg=recently_viewed&amp;context=recommendation">Knochi</a> der mir die Korrektur für meine Schaltung geliefert hat.</li>
+	<li>Adafruit</li>
+</ul>
+
+<hr />
+
+<h2>9. Quellenverzeichnis</h2>
+
+<blockquote>
+<p>Die Bauteile Bibliotheken habe ich mir auf <a href="https://www.snapeda.com/">SnapEDA.com</a> heruntergeladen.</p>
+</blockquote>
+
+<style>
+.center {
+	text-align: center;
+}
+</style>
+
+<script>
+/* Preferences */
+
+let min = 2
+let max = 6
+
+let blacklist = [
+  'Inhaltsverzeichnis',
+  'Ausarbeitung für Embedded Systems 1'
+]
+
+/* =========== */
+
+var headers = []
+
+window.onload = function() {
+	loadLastUpdatedBitbucket('kuhltime', '')
+  	generateTableOfContent()
+	generatePartsTable()
+}
+
+
+/* Functions */
+
+function loadLastUpdatedBitbucket(user, repo) {
+	let $field = document.getElementById('lastUpdated')
+	let url = `https://api.bitbucket.org/2.0/repositories/${user}/${repo}/`
+
+	fetchAsync(url)
+		.then(data => { 
+			let updated = new Date(data.updated_on)
+
+			console.log(data)
+
+			let options = { 
+				year: 'numeric', 
+				month: 'long', 
+				day: 'numeric'
+			}
+	
+			$field.innerHTML = updated.toLocaleDateString('de-DE', options)
+		})
+		.catch(error => { 
+			$field.innerHTML = 'Repository is Marked Private'
+			$field.style.color = '#FD2220'
+			console.error(error)
+			console.error('The is unavailable or marked as private')
+		})
+}
+
+Number.prototype.toFixedNumber = function(digits, base){
+  var pow = Math.pow(base||10, digits);
+  return Math.round(this*pow) / pow;
+}
+
+function generatePartsTable() {
+	let url = "https://api.jsonbin.io/b/5f2832cfdddf413f95bbbf3e"
+
+	fetch(url)
+		.then(res => res.json())
+  		.then(data => {
+		  	if (data == undefined || data.length == 0) {
+		    	return
+		    }
+		    
+		    let $output = document.getElementById('partsTableBody')
+		    
+		    console.log(data)
+		    
+		    let items = ['MPN', 'Qty', 'Description', 'Batch Total [Lowest Price (Overall)]']
+
+			var totalPrice = 0
+		  
+		  	data.forEach(e => {
+		    	let $row = document.createElement('tr')
+		    
+		    	items.forEach(item => {
+		      		let $cell = document.createElement('td')
+					
+                    var value = e[item]
+        
+			        if (typeof value == 'number') {
+			        	value = value.toFixedNumber(2, 10)
+			        }
+
+                    if (item == 'Batch Total [Lowest Price (Overall)]') {
+						value = `${value}€`
+ 					}
+			        
+			        $cell.innerHTML = value
+		        
+		        	$row.appendChild($cell)
+		     	})
+		      
+		     	$output.appendChild($row)
+    		})
+  		})
+}
+
+function generateTableOfContent() {
+	let $toc = document.getElementById('toc')
+
+	$toc.innerHTML = 'Lädt ...'
+
+	// gets all the headers that are available
+  headers = getHeaders(min, max)
+	
+  // The html string that gets populated and later displayed inside the
+  // table of content #toc element
+  var html = ''
+  
+  // The previousValue stores the depth of the last header
+  var previousValue = min - 1
+
+  headers.forEach(($header, index) => {
+  	// Get values
+    let headerValue = parseInt($header.localName.charAt(1))
+    let difference = previousValue - headerValue
+    let title = $header.innerHTML
+    let camelTitle = toCamelCase(title)
+
+		// Check if title is blacklisted
+    if (blacklist.includes(title)) {
+      return
+    }
+    
+    // Update header id
+    $header.id = camelTitle
+
+    var i = 0
+
+		// Add wrapper
+    if (difference > 0) {
+      // Go out
+      for (i; i < Math.abs(difference); i++) {
+        html += '</ul>'
+        previousValue--
+      }
+
+    } else if (difference < 0) {
+      // Go in
+      for (i; i < Math.abs(difference); i++) {
+        html += '<ul>'
+        previousValue++
+      }
+    }
+
+		// Add list item
+    html += `<li><a href="#${camelTitle}">${title}</a></li>`
+  })
+
+  $toc.innerHTML = html
+}
+
+function loadMagData() {
+	const lat = parseFloat(document.getElementById('lat').value)
+	const lng = parseFloat(document.getElementById('lng').value)
+
+
+	if (lat == NaN || lng == NaN) {
+		console.error('Invalid data')
+		return
+	}
+
+	const year = new Date().getFullYear()	
+
+	const url = `https://globalmagnet.amentum.space/wmm/magnetic_field?altitude=0&latitude=${lat}&longitude=${lng}&year=${year}`
+	const $field = document.getElementById('magData')
+
+	const $btn = document.getElementById('magBtn')
+	$btn.innerHTML = "Lädt..."
+	$btn.disabled = true
+
+	fetchAsync(url)
+		.then(data => {
+			console.log(data)
+			const dec = data.declination.value.toFixed(1)
+			const inc = data.inclination.value.toFixed(1)
+			const strength = (data.total_intensity.value / 1000).toFixed(0)
+
+			$field.innerHTML = `Deklination: ${dec}°<br>Inklination: ${inc}°<br>Stärke: ${strength}mT`
+			$field.style.display = "block"
+			$field.style.color = 'black'
+
+			$btn.innerHTML = "Laden"
+			$btn.disabled = false
+		})
+		.catch(error => {
+			console.error(error)
+			$field.innerHTML = "Error. Open up console for more information!"
+			$field.style.display = "block"
+			$field.style.color = '#FD2220'
+
+			$btn.innerHTML = "Laden"
+			$btn.disabled = false
+		})
+}
+
+function getHeaders(min, max) {
+  var tagNames = ''
+  var i = min
+
+  for (i; i <= max; i++) {
+    tagNames += `h${i}`
+    if (i != max) {
+      tagNames += ','
+    }
+  }
+
+  return document.querySelectorAll(tagNames)
+}
+
+function calculateDistance(lat_a, lat_b, lng_a, lng_b) {
+	
+}
+
+// https://stackoverflow.com/a/2970588/4179020
+function toCamelCase(str) {
+  return str
+    .replace(/\s(.)/g, function($1) {
+      return $1.toUpperCase();
+    })
+    .replace(/\s/g, '')
+    .replace(/^(.)/, function($1) {
+      return $1.toLowerCase();
+    });
+}
+
+//https://gist.github.com/msmfsd/fca50ab095b795eb39739e8c4357a808 
+// async function
+async function fetchAsync (url) {
+  // await response of fetch call
+  let response = await fetch(url);
+  // only proceed once promise is resolved
+  let data = await response.json();
+  // only proceed once second promise is resolved
+  return data;
+}
+
+/* ========= */
+</script>
+<script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath:[['$','$']]}});</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=default' async></script>
+<ol id="footnotes">
+	<li id="fn1">Douglas, B. (2019). Understanding Sensor Fusion and Tracking, Part 2: Fusing a Mag, Accel, &amp; Gyro Estimate. MatLab auf YouTube. Zugriff: 17. Juni 2020 <br/><a href="">https://www.youtube.com/watch?v=0rlvvYgmTvI</a> <a href="#ffn1">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn2">Wahdan, A., Georgy, J., Abdelfatah, W.F. and Noureldin, A. (2014). Magnetometer Calibration for Portable Navigation Devices in Vehicles Using a Fast and Autonomous Technique. IEEE Transactions on Intelligent Transportation Systems, 15(5), p.2. Zugriff: 20. Juni 2020<br/><a href="">https://www.researchgate.net/publication/266082960_Magnetometer_Calibration_<br/>for_Portable_Navigation_Devices_in_Vehicles_Using_a_Fast_and_<br/>Autonomous_Technique</a> <a href="#ffn2">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn3">National Centers for Environmental Information (NCEI) (2019). World Magnetic Model. Noaa.gov. Zugriff: 18. Juni 2020. <br/><a href="">https://www.ngdc.noaa.gov/geomag/WMM/</a> <a href="#ffn3">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn4"><a href="https://www.movable-type.co.uk/scripts/latlong.html">https://www.movable-type.co.uk/scripts/latlong.html</a> <a href="#ffn4">&#x21A9;&#xFE0E;</a></li>
+</ol></body>
+</html>
+
