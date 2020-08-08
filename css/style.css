@@ -158,7 +158,7 @@ td:not(:last-child) {
 }
 
 td {
-  word-wrap: anywhere;
+  word-wrap: anywhere !important;
 }
 
 tr:not(:last-child) {

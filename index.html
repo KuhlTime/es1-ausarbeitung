@@ -22,6 +22,14 @@
 	<li>Letztes Update: <b><span id="lastUpdated">Lädt ...</span></b> </li>
 </ul>
 
+<h3>Kurzbeschreibung (in 100 Wörtern)</h3>
+
+<p>Da ich und mein Vater es leid waren ständig unser Handy herauszuholen um die richtige Richtung, entlang unserer Mountainbike-Route, zu finden habe ich mich dazu entschieden einen Navigationskompass als meine Prüfungsleistung in dem Modul Embedded Systems 1 zu entwickeln und auch produzieren zu lassen.</p>
+
+<p>Neben dem Board, welches einen Mikrocontroller, eine IMU und einen Laderegler beherbergt habe ich ich auch eine passende App für die Kalibrierung des Magnetometer und Einpflegen der zu fahrenden Route programmiert.</p>
+
+<p>In meiner Ausarbeitung beschriebe ich den Entwicklungsprozess und gehe kurz auf einige technische Aspekte meiner Arbeit ein.</p>
+
 <h2>Inhaltsverzeichnis</h2>
 
 <div id="toc"></div>
@@ -273,7 +281,7 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 
 <p></p>
 
-<p>Für die Kalibrierung habe ich eine eigenständige App entwickelt, welche die Sensordaten des Navitron per WebSocket Verbindung bekommt.</p>
+<p>Für die Kalibrierung habe ich eine eigenständige App entwickelt, welche sich die Messdaten über einen WebSocket einholt.</p>
 
 <p>Zum Kalibrieren muss nun der Sensor in möglich alle Richtungen bewegt werden, so dass auf dem angezeigten Streungsdiagramm drei Kugeln entstehen. Sind die Kugeln verschoben oder gestreckt so handelt es sich um die eben erwähnten Störfaktoren. Da die Achsen des Diagramms nicht einhundert prozentig gleich skaliert sind kann es zu einer Streckung / Stauchung der Grafik kommen, was sich allerdings nicht auf die Messdaten auswirkt.</p>
 
@@ -288,9 +296,50 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 
 <h3>5.4 Kursbestimmung</h3>
 
-<h3>5.5 Laufender Betrieb</h3>
+<p>Auf dem Board werden alle paar Millisekunden die neusten IMU Daten über I2C abgefragt und mit folgender Formel die Ausrichtung des Board bestimmt. Die Formel kommt aus einem Video über <a href="https://www.youtube.com/watch?v=0rlvvYgmTvI">Sensor Fusion</a>, des offiziellen Matlab YouTube Channels.</p>
 
-<p>Um die Inklination des Magnetfeldes zu kompensieren und die dreidimensional vorliegenden Daten in eine zweidimensionale Form, wie bei einem Kompass zu überführen muss…</p>
+<p>Die beiden Vektoren $\vec{\text{acc}}$ und $\vec{\text{mag}}$ können mittels der gelieferten Sensorwerte aufgestellt werden.</p>
+
+<br>
+$
+\vec{\text{acc}}:=\left( x_\text{acc}, y_\text{acc}, z_\text{acc} \right)^\text{T}
+\\
+\vec{\text{mag}}:=\left( x_\text{mag}, y_\text{mag}, z_\text{mag} \right)^\text{T}
+$
+$
+\vec{\text{mag}_{\text{offset}}}:=\left( x_\text{offset}, y_\text{offset}, z_\text{offset} \right)^\text{T}
+\\
+\vec{\text{mag}_{\text{scale}}}:=\left( x_\text{scale}, y_\text{scale}, z_\text{scale} \right)^\text{T}
+$
+<p>Die Vektoren $\vec{\text{offset}}$ und $\vec{\text{scale}}$ sind die beiden Ausgleichsvektoren, welche wir zuvor in Schritt <a href="">5.3 Magnetometer Kalibrierung</a> ermittelt haben.</p>
+
+<ol>
+	<li><strong>Magnetometer Messwerte korrigieren</strong>
+
+		<p>Der Offset wird von den Messdaten abgezogen und das Resultat Komponentenweise mit dem Hadamard Produkt multipliziert.</p>
+
+		$
+		\vec{\text{mag}_c}:=\left( \vec{\text{mag}}-\vec{\text{mag}_{\text{offset}}} \right) \circ \vec{\text{mag}_{\text{scale}}}
+		$</li>
+	<li><strong>Invertierung des Beschleunigungsvektors</strong>
+
+		<p>Mit der Invertierung des Beschleunigungsvektors erhält man den Vektor in Richtung des Erdgravitation.</p>
+
+		$\vec{\text{runter}}:=-\vec{\text{acc}}$</li>
+	<li><strong>Kreuzprodukt 1</strong>
+
+		<p>Das Kreuzprodukt $\vec{ost}:=\vec{\text{mag}} ×\vec{\text{runter}}$ ergibt einen Vektor der in der xy-Ebene nach Osten zeigt.</p></li>
+	<li><strong>Kreuzprodukt 2</strong>
+
+		<p>Nimmt das Kreuzprodukt zwischen $\vec{\text{osten}}$ und $\vec{\text{runter}}$ erhält man den gewünschten Vektor mit Ausrichtung in Richtung Norden. $\vec{\text{norden}}:=\vec{\text{osten}} ×\vec{\text{runter}}$</p></li>
+	<li><strong>Ausrichtung</strong>
+
+		<p>Mit dem $atan2$ kann dann der eigentlich Winkel berechnet werden. </p>
+
+		<p>$\text{ausrichtung}:=atan2(y_{\text{norden}}, x_{\text{norden}})$</p></li>
+</ol>
+
+<h3>5.5 Laufender Betrieb</h3>
 
 <hr />
 
@@ -341,18 +390,7 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 
 <figure><img src="IMG_0756.jpg" alt="Backup-Lösung mit ICM-20948 Breakout"/><figcaption>Backup-Lösung mit ICM-20948 Breakout</figcaption></figure>
 
-<h3>6.5 Verbesserung</h3>
-
-<p>Hier eine Auflistung einiger Sachen die ich für die nächste Version oder beim designen eines anderen Projektes besser machen möchte.</p>
-
-<ul>
-	<li>Mein Logo auf das Board drucken lassen.</li>
-	<li>Die Beschriftungen des PCBs einheitlich machen und darauf achten, dass jedes Teil beschriftet ist.</li>
-	<li>Kleine Komponenten mit einem per Pick and Place Service aufbringen lassen. Dafür bietet JLCPCB einen entsprechenden Service an. Eventuell müssen andere Komponenten verwendet werden.</li>
-	<li>Alternative Bauteile heraussuchen und Funktionen vergleichen.</li>
-	<li>Mehr mit dem Datenblatt arbeiten.</li>
-	<li>Schauen, dass Bauteile RoHS-konform sind.</li>
-</ul>
+<h3>6.5 Zweiter Prototype</h3>
 
 <hr />
 
@@ -372,7 +410,7 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 </table>
 <h3>7.1 Kosten</h3>
 
-<p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe lagen meine Anschaffungskosten bei etwa 150€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegt meine Ausgabe über den 139€ für den SmartHalo habe aber durch das entwerfen einiges an Erfahrung gewonnen und kann nun auch für meine Familie einen solchen Fahrradcomputer erstellen.</p>
+<p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe lagen meine Anschaffungskosten bei etwa 250€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegen meine Ausgaben über den 139€ Anschaffungskosten des SmartHalo, habe aber durch das Entwerfen der Schaltung und das Programmieren der Apps einiges an Erfahrung gewonnen.</p>
 
 <hr />
 
@@ -381,16 +419,11 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 <ul>
 	<li>Danke an <a href="https://www.sparkfun.com/">Sparkfun</a> für das ihre Open Source zugänglichen Schaltungen.</li>
 	<li>Danke an <a href="https://de.fiverr.com/knochi/design-your-custom-electronics?context_referrer=search_gigs&amp;source=your_recently_viewed_gigs&amp;ref_ctx_id=9039e438-964f-4fa9-b083-d1eeb5000c71&amp;pckg_id=1&amp;pos=2&amp;is_pro=false&amp;context_alg=recently_viewed&amp;context=recommendation">Knochi</a> der mir die Korrektur für meine Schaltung geliefert hat.</li>
-	<li>Adafruit</li>
 </ul>
 
 <hr />
 
 <h2>9. Quellenverzeichnis</h2>
-
-<blockquote>
-<p>Die Bauteile Bibliotheken habe ich mir auf <a href="https://www.snapeda.com/">SnapEDA.com</a> heruntergeladen.</p>
-</blockquote>
 
 <style>
 .center {
