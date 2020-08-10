@@ -247,7 +247,7 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 <p>Im Folgenden habe ich die beiden Schritte, die nötig sind, um die Distanz rechnerisch zu ermitteln, näher beschrieben. Wen dies nicht interessiert kann den Teil auch überspringen.</p>
 
 <ol>
-	<li>Zu Beginn muss der <em>Zentriwinkel</em> $\zeta$ (Eine Strecke ausgedrückt als Winkel) berechnet werden. Die Formel dafür habe ich von der <a href="https://www.wikiwand.com/de/Orthodrome">Orthodrome Wikipedia</a> Seite. In der Formel werden die geographische Länge $\lambda$ (longitude) und die geographische Breite $\phi$ (latitude) der beiden Koordinaten $\text{A}$ und $\text{B}$ benötigt.
+	<li>Zu Beginn muss der <em>Zentriwinkel</em> $\zeta$ (Eine Strecke ausgedrückt als Winkel) berechnet werden. Die Formel dafür habe ich von der <a href="https://de.wikipedia.org/wiki/Orthodrome">Orthodrome Wikipedia</a> <sup><a id="ffn4" href="#fn4" class="footnote">4</a></sup> Seite. In der Formel werden die geographische Länge $\lambda$ (longitude) und die geographische Breite $\phi$ (latitude) der beiden Koordinaten $\text{A}$ und $\text{B}$ benötigt.
 
 		<br><br>
 		<p class="center">
@@ -276,13 +276,11 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 
 <p><strong>Soft-Ironing</strong> verursacht eine Streckung bzw. Stauchung, der Messdaten.</p>
 
-<p></p>
-
 <p>Für die Kalibrierung habe ich eine eigenständige App entwickelt, welche sich die Messdaten über einen WebSocket einholt.</p>
 
 <p>Zum Kalibrieren muss nun der Sensor in alle Richtungen bewegt werden, so dass auf dem angezeigten Streuungsdiagramm drei Kugeln entstehen. Sind die Kugeln verschoben oder gestreckt, so handelt es sich um die eben erwähnten Störfaktoren. Da die Achsen des Diagramms nicht einhundert prozentig gleich skaliert sind, kann es zu einer Streckung / Stauchung der Grafik kommen, was sich allerdings nicht auf die Messdaten auswirkt.</p>
 
-<p>Nachdem genug Daten gesammelt sind kann die Verbindung unterbrochen werden und mit einem Klick auf <em>Calibrate</em> die Ausgleichswerte berechnet werden.</p>
+<p>Nachdem genug Daten gesammelt sind kann die Verbindung unterbrochen werden und mit einem Klick auf <em>Calibrate</em> die Ausgleichswerte berechnet werden. <sup><a id="ffn6" href="#fn6" class="footnote">6</a></sup> <sup><a id="ffn7" href="#fn7" class="footnote">7</a></sup></p>
 
 <p>Hier ein kurzes Video des Prozesses:</p>
 
@@ -336,7 +334,7 @@ $
 		<p>$\text{ausrichtung}:=atan2(y_{\text{norden}}, x_{\text{norden}})$</p></li>
 </ol>
 
-<h3>5.5 Laufender Betrieb</h3>
+<p></p>
 
 <hr />
 
@@ -411,9 +409,15 @@ $
 
 <p>Die Kosten pro Board belaufen sich auf etwa 15€ bis 20€. Da ich Ersatz-Komponenten für 3 Boards und einiges an zusätzlichem Werkzeug bestellt habe, lagen meine Anschaffungskosten bei etwa 250€. Mit zunehmender Abnahmemenge and PCB-Boards und Komponenten kann dieser Preis allerdings noch deutlich verringert werden. Damit liegen meine Ausgaben über den 139€, Anschaffungskosten des SmartHalo, habe aber durch das Entwerfen der Schaltung und das Programmieren der Apps einiges an Erfahrung gewonnen.</p>
 
+<h2>8. Dateien</h2>
+
+<p>In folgendem Repository finden Sie alle Dateien zu meinem Projekt.</p>
+
+<p><a href="https://github.com/KuhlTime/Navitron-Hardware">Navitron-Hardware</a></p>
+
 <hr />
 
-<h2>8. Danksagung</h2>
+<h2>9. Danksagung</h2>
 
 <ul>
 	<li>Danke an <a href="https://www.sparkfun.com/">Sparkfun</a> für das ihre Open Source zugänglichen Schaltungen.</li>
@@ -423,7 +427,7 @@ $
 
 <hr />
 
-<h2>9. Quellenverzeichnis</h2>
+<h2>10. Quellenverzeichnis</h2>
 
 <style>
 .center {
@@ -677,9 +681,15 @@ async function fetchAsync (url) {
 <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=default' async></script>
 <ol id="footnotes">
 	<li id="fn1">Douglas, B. (2019). Understanding Sensor Fusion and Tracking, Part 2: Fusing a Mag, Accel, &amp; Gyro Estimate. MatLab auf YouTube. Zugriff: 17. Juni 2020 <br/><a href="">https://www.youtube.com/watch?v=0rlvvYgmTvI</a> <a href="#ffn1">&#x21A9;&#xFE0E;</a></li>
-	<li id="fn2">Wahdan, A., Georgy, J., Abdelfatah, W.F. and Noureldin, A. (2014). Magnetometer Calibration for Portable Navigation Devices in Vehicles Using a Fast and Autonomous Technique. IEEE Transactions on Intelligent Transportation Systems, 15(5), p.2. Zugriff: 20. Juni 2020<br/><a href="">https://www.researchgate.net/publication/266082960_Magnetometer_Calibration_<br/>for_Portable_Navigation_Devices_in_Vehicles_Using_a_Fast_and_<br/>Autonomous_Technique</a> <a href="#ffn2">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn2">Wahdan, A., Georgy, J., Abdelfatah, W.F. and Noureldin, A. (2014). Magnetometer Calibration for Portable Navigation Devices in Vehicles Using a Fast and Autonomous Technique. IEEE Transactions on Intelligent Transportation Systems, p.2. Zugriff: 20. Juni 2020<br/><a href="">https://www.researchgate.net/publication/266082960_Magnetometer_Calibration_<br/>for_Portable_Navigation_Devices_in_Vehicles_Using_a_Fast_and_<br/>Autonomous_Technique</a> <a href="#ffn2">&#x21A9;&#xFE0E;</a></li>
 	<li id="fn3">National Centers for Environmental Information (NCEI) (2019). World Magnetic Model. Noaa.gov. Zugriff: 18. Juni 2020. <br/><a href="">https://www.ngdc.noaa.gov/geomag/WMM/</a> <a href="#ffn3">&#x21A9;&#xFE0E;</a></li>
-	<li id="fn4"><a href="https://www.movable-type.co.uk/scripts/latlong.html">https://www.movable-type.co.uk/scripts/latlong.html</a> <a href="#ffn4">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn4">Wikipedia. (2019). Orthodrome. Zugriff am: 10.08.2020<br/><a href="https://de.wikipedia.org/wiki/Orthodrome">https://de.wikipedia.org/wiki/Orthodrome </a> <a href="#ffn4">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn5"><a href="https://www.movable-type.co.uk/scripts/latlong.html">https://www.movable-type.co.uk/scripts/latlong.html</a> <a href="#ffn5">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn6">Tuupola, M. (2018). How to Calibrate a Magnetometer? Zugriff: 10.08.2020<br/><a href="https://appelsiini.net/2018/calibrate-magnetometer/" title="https://appelsiini.net/2018/calibrate-magnetometer/">https://appelsiini.net/2018/calibrate-magnetometer/ </a> <a href="#ffn6">&#x21A9;&#xFE0E;</a></li>
+	<li id="fn7">Pedley, M. (2012). Electronic Compass:Tilt Compensation &amp; Calibration. npx.com, NXP, p.5. Zugriff am: 17. Juni 2020.
+
+		<p><a href="https://www.nxp.com/docs/en/supporting-information/ARTICLE_REPRINT.pdf"> https://www.nxp.com/docs/en/supporting-information/ARTICLE_REPRINT.pdf </a> <a href="#ffn7">&#8617;</a></p>
+	</li>
 </ol></body>
 </html>
 
