@@ -21,6 +21,7 @@
 	<li>Erstellt: <strong>17. Juni 2020</strong></li>
 </ul>
 
+<iframe width="600" height="400" src="https://www.youtube.com/embed/iRDI1azNmJA" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 <h3>Kurzbeschreibung (in 100 Wörtern)</h3>
 
 <p>Da ich es leid war, bei meinen Mountainbiketouren, ständig nach der richtigen Route auf meinem Handy zu schauen. Habe ich mich dazu entschieden, für meine Ausarbeitung einen Navigationskompass zu entwickeln, der mir ohne großen Aufwand den richtigen Weg weist. </p>
@@ -215,13 +216,13 @@ $\text{I}_{\text{REG}}\ [\text{mA}]=\frac{1000 \text{V}}{\text{R}_{\text{PROG}}}
 	<span class="syntax-all syntax-entity">wp</span>: Coordinate, 
 	<span class="syntax-all syntax-entity">radius</span>: <span class="syntax-all syntax-constant">Double</span>
 ) <span class="syntax-all syntax-keyword">-&gt;</span> <span class="syntax-all syntax-constant">Bool</span> {
-	<span class="syntax-all syntax-comment">// Die Entfernung zwischen der Position und dem 
-</span>	<span class="syntax-all syntax-comment">// Wegpunkt
-</span>	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">entfernung</span>(<span class="syntax-all syntax-constant">zu</span>: wp)
+	<span class="syntax-all syntax-comment">// Die Entfernung zwischen der Position und dem </span>
+	<span class="syntax-all syntax-comment">// Wegpunkt</span>
+	<span class="syntax-all syntax-keyword">let</span> entfernung <span class="syntax-all syntax-keyword">=</span> pos.<span class="syntax-all syntax-constant">entfernung</span>(<span class="syntax-all syntax-constant">zu</span>: wp)
 
-	<span class="syntax-all syntax-comment">// Prüfen pb die Entfernung zum Wegpunkt kleiner ist
-</span>	<span class="syntax-all syntax-comment">// als der Detektionsradius
-</span>	<span class="syntax-all syntax-keyword">return</span> entfernung <span class="syntax-all syntax-keyword">&lt;</span> radius
+	<span class="syntax-all syntax-comment">// Prüfen pb die Entfernung zum Wegpunkt kleiner ist</span>
+	<span class="syntax-all syntax-comment">// als der Detektionsradius</span>
+	<span class="syntax-all syntax-keyword">return</span> entfernung <span class="syntax-all syntax-keyword">&lt;</span> radius
 }</code></pre>
 
 <p>Da vielleicht aufgrund von Ungenauigkeiten bei der GPS Bestimmung die Auswahl des Wegpunktes fehlschlägt, soll es in der App die Möglichkeit geben den nächsten Wegpunkt manuell auszuwählen.</p>
